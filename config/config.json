@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "simwego_user",
+    "password": "simwego_password_2024",
+    "database": "simwego",
+    "host": "localhost",
+    "port": 5432,
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "simwego_user", 
+    "password": "simwego_password_2024",
+    "database": "simwego_test",
+    "host": "localhost",
+    "port": 5432,
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "simwego_user",
+    "password": "simwego_password_2024", 
+    "database": "simwego",
+    "host": "localhost",
+    "port": 5432,
+    "dialect": "postgres"
+  }
+}

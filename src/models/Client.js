@@ -1,0 +1,162 @@
+// src/models/Client.js - Modèle Client avec Sequelize
+const { DataTypes, Model } = require('sequelize');
+const crypto = require('crypto');
+
+class Client extends Model {
+  // Méthode pour chiffrer le mot de passe
+  static encryptPassword(password) {
+    const algorithm = 'aes-256-cbc';
+    const key = crypto.scryptSync(
+      process.env.DB_ENCRYPTION_KEY || 'simwego-default-key', 
+      'salt', 
+      32
+    );
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv(algorithm, key, iv);
+    
+    let encrypted = cipher.update(password, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    
+    return iv.toString('hex') + ':' + encrypted;
+  }
+
+  // Méthode pour déchiffrer le mot de passe
+  static decryptPassword(encryptedPassword) {
+    if (!encryptedPassword || !encryptedPassword.includes(':')) {
+      throw new Error('Invalid encrypted password format');
+    }
+    
+    const algorithm = 'aes-256-cbc';
+    const key = crypto.scryptSync(
+      process.env.DB_ENCRYPTION_KEY || 'simwego-default-key', 
+      'salt', 
+      32
+    );
+    
+    const parts = encryptedPassword.split(':');
+    const iv = Buffer.from(parts[0], 'hex');
+    const encrypted = parts[1];
+    
+    const decipher = crypto.createDecipheriv(algorithm, key, iv);
+    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    
+    return decrypted;
+  }
+
+  // Méthode d'instance pour obtenir les credentials Monty déchiffrés
+  getMontyCredentials() {
+    return {
+      username: this.monty_username,
+      password: Client.decryptPassword(this.monty_password_encrypted)
+    };
+  }
+
+  // Méthode d'instance pour mettre à jour le mot de passe Monty
+  async updateMontyPassword(newPassword) {
+    this.monty_password_encrypted = Client.encryptPassword(newPassword);
+    await this.save();
+  }
+
+  // Méthode pour générer une nouvelle clé API
+  static generateApiKey(clientId) {
+    const timestamp = Date.now().toString(36);
+    const random = crypto.randomBytes(8).toString('hex');
+    return `swg_${clientId}_${timestamp}_${random}`;
+  }
+
+  // Méthode pour formater la réponse (sans données sensibles)
+  toSafeJSON() {
+    return {
+      id: this.id,
+      name: this.name,
+      api_key: this.api_key,
+      active: this.active,
+      monty_username: this.monty_username,
+      created_at: this.createdAt,
+      updated_at: this.updatedAt
+    };
+  }
+
+}
+
+// Fonction d'initialisation du modèle
+function initClient(sequelize) {
+  Client.init({
+    id: {
+      type: DataTypes.STRING,
+      primaryKey: true,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        len: [1, 50]
+      }
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        len: [1, 100]
+      }
+    },
+    api_key: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        len: [10, 100]
+      }
+    },
+    active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+      allowNull: false
+    },
+    monty_username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        len: [1, 50]
+      }
+    },
+    monty_password_encrypted: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      validate: {
+        notEmpty: true
+      }
+    },
+    // Champ virtuel pour le mot de passe en clair (utilisé temporairement)
+    monty_password: {
+      type: DataTypes.VIRTUAL,
+      set(value) {
+        this.setDataValue('monty_password', value);
+      }
+    }
+  }, {
+    sequelize,
+    modelName: 'Client',
+    tableName: 'clients',
+    timestamps: true,
+    underscored: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ['api_key']
+      },
+      {
+        fields: ['active']
+      },
+      {
+        fields: ['created_at']
+      }
+    ],
+  });
+
+  return Client;
+}
+
+module.exports = { Client, initClient };
