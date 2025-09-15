@@ -12,21 +12,35 @@ class AdminClientController {
       const models = req.app.get('models');
       
       const clients = await models.Client.findAll({
+        include: [{
+          model: models.TokenCache,
+          as: 'tokenCache',
+          required: false
+        }],
         order: [['created_at', 'DESC']]
       });
 
-      const clientsWithStatus = clients.map(client => ({
-        id: client.id,
-        name: client.name,
-        api_key: client.api_key,
-        active: client.active,
-        monty_username: client.monty_username,
-        token_status: 'none', // Simplified for now
-        created_at: client.createdAt,
-        updated_at: client.updatedAt,
-        agent_id: null,
-        reseller_id: null
-      }));
+      const clientsWithStatus = clients.map(client => {
+        const tokenCache = client.tokenCache;
+        let tokenStatus = 'none';
+        
+        if (tokenCache) {
+          tokenStatus = tokenCache.isValid() ? 'valid' : 'expired';
+        }
+
+        return {
+          id: client.id,
+          name: client.name,
+          api_key: client.api_key,
+          active: client.active,
+          monty_username: client.monty_username,
+          token_status: tokenStatus,
+          created_at: client.createdAt,
+          updated_at: client.updatedAt,
+          agent_id: tokenCache?.agent_id || null,
+          reseller_id: tokenCache?.reseller_id || null
+        };
+      });
 
       res.json({
         clients: clientsWithStatus,
@@ -98,42 +112,34 @@ class AdminClientController {
   async createClient(req, res) {
     try {
       const models = req.app.get('models');
-      const { id, name, monty_username, monty_password, active = true } = req.body;
+      const { name, monty_username, monty_password, active = true } = req.body;
 
       // Validation des données
-      if (!id || !name || !monty_username || !monty_password) {
+      if (!name || !monty_username || !monty_password) {
         return res.status(400).json({
           error: 'Missing required fields',
-          message: 'id, name, monty_username, and monty_password are required'
+          message: 'name, monty_username, and monty_password are required'
         });
       }
-
-      // Vérifier si le client existe déjà
-      const existingClient = await models.Client.findByPk(id);
-      if (existingClient) {
-        return res.status(409).json({
-          error: 'Client already exists',
-          message: `Client with ID '${id}' already exists`
-        });
-      }
-
-      // Générer une API key sécurisée
-      const apiKey = encryptionService.generateApiKey(id);
 
       // Chiffrer le mot de passe
       const encryptedPassword = encryptionService.encryptPassword(monty_password);
 
-      // Créer le client
+      // Créer le client avec une API key temporaire (l'ID sera généré automatiquement)
+      const tempApiKey = `temp_${Date.now()}_${Math.random().toString(36).substring(7)}`;
       const clientData = {
-        id,
         name,
-        api_key: apiKey,
+        api_key: tempApiKey,
         monty_username,
         monty_password_encrypted: encryptedPassword,
         active
       };
 
       const client = await models.Client.create(clientData);
+      
+      // Générer l'API key définitive avec l'ID auto-généré
+      const finalApiKey = encryptionService.generateApiKey(client.id);
+      await client.update({ api_key: finalApiKey });
 
       logger.info('Client created successfully', {
         clientId: client.id,

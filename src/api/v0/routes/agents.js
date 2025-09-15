@@ -3,7 +3,10 @@ const express = require('express');
 const router = express.Router();
 const agentController = require('../controllers/agentController');
 
-// Agent routes
+// Agent authentication
+router.post('/login', require('../controllers/authController').login);
+
+// Agent routes  
 router.get('/', agentController.getAgents);
 router.post('/', agentController.addAgent);
 

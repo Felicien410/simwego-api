@@ -70,7 +70,7 @@ class TokenCache extends Model {
 function initTokenCache(sequelize) {
   TokenCache.init({
     client_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       primaryKey: true,
       allowNull: false,
       references: {

@@ -36,4 +36,14 @@ logs: ## Affiche les logs
 test: ## Lance les tests
 	npm test
 
+list-clients: ## Liste tous les clients avec toutes leurs infos
+	@echo "$(GREEN)📋 Liste complète des clients SimWeGo$(NC)"
+	@echo "ID | Name | Active | Monty User | API Key | Token Status | Agent ID | Reseller ID"
+	@echo "---|------|--------|------------|---------|--------------|----------|------------"
+	@export $$(grep -v '^#' .env | xargs) && \
+	curl -s -X GET http://localhost:3001/admin/clients \
+		-H "Content-Type: application/json" \
+		-H "Authorization: Bearer $$TEST_ADMIN_TOKEN" \
+		| jq -r 'if .clients then (.clients[] | "\(.id) | \(.name) | \(.active) | \(.monty_username) | \(.api_key) | \(.token_status) | \(.agent_id // "N/A") | \(.reseller_id // "N/A")") else "Aucun client trouvé" end'
+
 .DEFAULT_GOAL := all

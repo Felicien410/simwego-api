@@ -51,13 +51,10 @@ class Client extends Model {
 function initClient(sequelize) {
   Client.init({
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       primaryKey: true,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-        len: [1, 50]
-      }
+      autoIncrement: true,
+      allowNull: false
     },
     name: {
       type: DataTypes.STRING,
