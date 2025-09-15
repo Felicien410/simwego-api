@@ -1,10 +1,9 @@
 // =============================================================================
 // src/controllers/admin/clientController.js - Contrôleur admin des clients
 // =============================================================================
-const crypto = require('crypto');
 const { logger } = require('../../config/database');
 const montyAuthService = require('../../services/montyAuth');
-const { generateSecureApiKey } = require('../../../scripts/generate-api-keys');
+const encryptionService = require('../../services/encryption');
 
 class AdminClientController {
   // GET /admin/clients - Lister tous les clients
@@ -118,22 +117,11 @@ class AdminClientController {
         });
       }
 
-      // Générer une API key sécurisée avec le script existant
-      const apiKey = generateSecureApiKey(id);
+      // Générer une API key sécurisée
+      const apiKey = encryptionService.generateApiKey(id);
 
-      // Chiffrer le mot de passe directement
-      const crypto = require('crypto');
-      const algorithm = 'aes-256-cbc';
-      const key = crypto.scryptSync(
-        process.env.DB_ENCRYPTION_KEY || 'simwego-default-key', 
-        'salt', 
-        32
-      );
-      const iv = crypto.randomBytes(16);
-      const cipher = crypto.createCipheriv(algorithm, key, iv);
-      let encrypted = cipher.update(monty_password, 'utf8', 'hex');
-      encrypted += cipher.final('hex');
-      const encryptedPassword = iv.toString('hex') + ':' + encrypted;
+      // Chiffrer le mot de passe
+      const encryptedPassword = encryptionService.encryptPassword(monty_password);
 
       // Créer le client
       const clientData = {
@@ -196,19 +184,8 @@ class AdminClientController {
       if (name !== undefined) updateData.name = name;
       if (monty_username !== undefined) updateData.monty_username = monty_username;
       if (monty_password !== undefined) {
-        // Chiffrer le mot de passe directement
-        const crypto = require('crypto');
-        const algorithm = 'aes-256-cbc';
-        const key = crypto.scryptSync(
-          process.env.DB_ENCRYPTION_KEY || 'simwego-default-key', 
-          'salt', 
-          32
-        );
-        const iv = crypto.randomBytes(16);
-        const cipher = crypto.createCipheriv(algorithm, key, iv);
-        let encrypted = cipher.update(monty_password, 'utf8', 'hex');
-        encrypted += cipher.final('hex');
-        updateData.monty_password_encrypted = iv.toString('hex') + ':' + encrypted;
+        // Chiffrer le mot de passe
+        updateData.monty_password_encrypted = encryptionService.encryptPassword(monty_password);
       }
       if (active !== undefined) updateData.active = active;
 

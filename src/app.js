@@ -9,7 +9,7 @@ const environment = require('./config/environment');
 const { initializeDatabase, closeDatabase, logger } = require('./config/database');
 const { initClient } = require('./models/Client');
 const { initTokenCache } = require('./models/TokenCache');
-const authMiddleware = require('./middleware/auth');
+// Middleware d'authentification importé mais pas utilisé directement dans app.js
 
 // NOUVEAU: Import des routes modulaires au lieu du proxy générique
 const apiRoutes = require('./api/v0/routes/index');
@@ -276,8 +276,9 @@ class SimWeGoAPI {
   // Routes d'administration authentifiées
   setupAdminRoutes() {
     // Information détaillée du client
+    const { apiKeyOnly } = require('./middleware/auth');
     this.app.get('/client/info', 
-      (req, res, next) => authMiddleware(req, res, next, this.models),
+      apiKeyOnly,
       async (req, res) => {
         try {
           const tokenCache = await this.models.TokenCache.findByPk(req.client.id);

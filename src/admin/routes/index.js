@@ -3,14 +3,14 @@ const express = require('express');
 const router = express.Router();
 
 // Import middleware
-const jwtAuth = require('../../middleware/auth/jwtAuth');
+const { adminJwt } = require('../../middleware/auth');
 
 // Import controllers
 const statsController = require('../controllers/statsController');
 const clientController = require('../controllers/clientController');
 
 // All admin routes require JWT authentication
-router.use(jwtAuth);
+router.use(adminJwt);
 
 // Stats routes
 router.get('/stats', statsController.getStats);

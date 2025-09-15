@@ -1,47 +1,16 @@
 // src/models/Client.js - Modèle Client avec Sequelize
 const { DataTypes, Model } = require('sequelize');
-const crypto = require('crypto');
+const encryptionService = require('../services/encryption');
 
 class Client extends Model {
   // Méthode pour chiffrer le mot de passe
   static encryptPassword(password) {
-    const algorithm = 'aes-256-cbc';
-    const key = crypto.scryptSync(
-      process.env.DB_ENCRYPTION_KEY || 'simwego-default-key', 
-      'salt', 
-      32
-    );
-    const iv = crypto.randomBytes(16);
-    const cipher = crypto.createCipheriv(algorithm, key, iv);
-    
-    let encrypted = cipher.update(password, 'utf8', 'hex');
-    encrypted += cipher.final('hex');
-    
-    return iv.toString('hex') + ':' + encrypted;
+    return encryptionService.encryptPassword(password);
   }
 
   // Méthode pour déchiffrer le mot de passe
   static decryptPassword(encryptedPassword) {
-    if (!encryptedPassword || !encryptedPassword.includes(':')) {
-      throw new Error('Invalid encrypted password format');
-    }
-    
-    const algorithm = 'aes-256-cbc';
-    const key = crypto.scryptSync(
-      process.env.DB_ENCRYPTION_KEY || 'simwego-default-key', 
-      'salt', 
-      32
-    );
-    
-    const parts = encryptedPassword.split(':');
-    const iv = Buffer.from(parts[0], 'hex');
-    const encrypted = parts[1];
-    
-    const decipher = crypto.createDecipheriv(algorithm, key, iv);
-    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-    decrypted += decipher.final('utf8');
-    
-    return decrypted;
+    return encryptionService.decryptPassword(encryptedPassword);
   }
 
   // Méthode d'instance pour obtenir les credentials Monty déchiffrés
@@ -60,9 +29,7 @@ class Client extends Model {
 
   // Méthode pour générer une nouvelle clé API
   static generateApiKey(clientId) {
-    const timestamp = Date.now().toString(36);
-    const random = crypto.randomBytes(8).toString('hex');
-    return `swg_${clientId}_${timestamp}_${random}`;
+    return encryptionService.generateApiKey(clientId);
   }
 
   // Méthode pour formater la réponse (sans données sensibles)

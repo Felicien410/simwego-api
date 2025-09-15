@@ -1,44 +1,55 @@
-// src/middleware/auth.js - Middleware d'authentification SimWeGo
+// src/middleware/auth.js - Unified Authentication Middleware
+const jwt = require('jsonwebtoken');
 const { logger } = require('../config/database');
 const montyAuthService = require('../services/montyAuth');
 
 /**
- * Middleware d'authentification des clients SimWeGo
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- * @param {Function} next - Express next function
- * @param {Object} models - Database models
+ * Authentication strategies
  */
-async function authenticateSimWeGoClient(req, res, next, models) {
-  try {
-    // Vérifier la présence du header Authorization
-    const authHeader = req.headers.authorization;
-    
+const AuthStrategies = {
+  API_KEY: 'api_key',
+  JWT_ADMIN: 'jwt_admin',
+  MONTY_TOKEN: 'monty_token'
+};
+
+/**
+ * Base authentication utility functions
+ */
+class AuthUtils {
+  static extractBearerToken(authHeader) {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        error: 'Missing or invalid Authorization header',
-        message: 'Please provide: Authorization: Bearer [your_simwego_api_key]',
-        code: 'AUTH_MISSING'
-      });
+      return null;
     }
+    return authHeader.substring(7).trim();
+  }
 
-    // Extraire la clé API
-    const apiKey = authHeader.substring(7).trim();
-    
+  static createAuthError(status, error, message, code) {
+    return { status, error, message, code };
+  }
+
+  static sendAuthError(res, { status, error, message, code }) {
+    return res.status(status).json({ error, message, code });
+  }
+}
+
+/**
+ * API Key Authentication Strategy
+ */
+class ApiKeyAuth {
+  static async authenticate(req, models) {
+    const authHeader = req.headers.authorization;
+    const apiKey = AuthUtils.extractBearerToken(authHeader);
+
     if (!apiKey) {
-      return res.status(401).json({
-        error: 'Empty API key',
-        message: 'Please provide a valid SimWeGo API key',
-        code: 'AUTH_EMPTY'
-      });
+      throw AuthUtils.createAuthError(401, 
+        'Missing or invalid Authorization header',
+        'Please provide: Authorization: Bearer [your_simwego_api_key]',
+        'AUTH_MISSING'
+      );
     }
 
-    // Rechercher le client en base de données
     const client = await models.Client.findOne({
-      where: { 
-        api_key: apiKey,
-        active: true 
-      }
+      where: { api_key: apiKey, active: true }
     });
 
     if (!client) {
@@ -48,14 +59,13 @@ async function authenticateSimWeGoClient(req, res, next, models) {
         userAgent: req.get('User-Agent')
       });
 
-      return res.status(401).json({
-        error: 'Invalid SimWeGo API key',
-        message: 'Please contact SimWeGo support for a valid API key',
-        code: 'AUTH_INVALID'
-      });
+      throw AuthUtils.createAuthError(401,
+        'Invalid SimWeGo API key',
+        'Please contact SimWeGo support for a valid API key',
+        'AUTH_INVALID'
+      );
     }
 
-    // Vérifier si le client est actif (double vérification)
     if (!client.active) {
       logger.warn('Authentication failed: Client account suspended', { 
         clientId: client.id,
@@ -63,137 +73,263 @@ async function authenticateSimWeGoClient(req, res, next, models) {
         ip: req.ip
       });
 
-      return res.status(403).json({
-        error: 'Client account suspended',
-        message: 'Please contact SimWeGo support to reactivate your account',
-        code: 'AUTH_SUSPENDED'
-      });
+      throw AuthUtils.createAuthError(403,
+        'Client account suspended',
+        'Please contact SimWeGo support to reactivate your account',
+        'AUTH_SUSPENDED'
+      );
     }
 
-    // Stocker les informations du client
     req.client = client;
-
-    // Pour la route /Agent/login, on n'a pas besoin de token Monty (on va le créer)
-    const isLoginRoute = req.method === 'POST' && req.originalUrl.includes('/Agent/login');
     
-    if (isLoginRoute) {
-      // Pour login, on passe directement sans token Monty
-      logger.info('Client authenticated for login route (no Monty token needed)', {
-        clientId: client.id,
-        clientName: client.name,
-        ip: req.ip
-      });
-      
-      return next();
-    }
-
-    // Pour toutes les autres routes, obtenir ou rafraîchir le token Monty
-    try {
-      const montyToken = await montyAuthService.getValidToken(client, models.TokenCache);
-      req.montyToken = montyToken;
-      
-      logger.info('Client authenticated successfully', {
-        clientId: client.id,
-        clientName: client.name,
-        ip: req.ip
-      });
-      
-      next();
-      
-    } catch (montyError) {
-      logger.error('Failed to authenticate with Monty eSIM', {
-        clientId: client.id,
-        clientName: client.name,
-        error: montyError.message,
-        ip: req.ip
-      });
-
-      return res.status(500).json({
-        error: 'Backend authentication failed',
-        message: 'Unable to authenticate with eSIM service. Please try again or contact support.',
-        code: 'MONTY_AUTH_FAILED'
-      });
-    }
-
-  } catch (error) {
-    logger.error('Authentication middleware error', {
-      error: error.message,
-      stack: error.stack,
-      ip: req.ip,
-      url: req.originalUrl
-    });
-
-    return res.status(500).json({
-      error: 'Authentication service error',
-      message: 'Please try again or contact support if the problem persists',
-      code: 'AUTH_SERVICE_ERROR'
-    });
-  }
-}
-
-/**
- * Middleware optionnel d'authentification (pour les routes qui n'en ont pas forcément besoin)
- */
-async function optionalAuth(req, res, next, models) {
-  const authHeader = req.headers.authorization;
-  
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    // Pas d'authentification, continuer sans client
-    return next();
-  }
-
-  // Tenter l'authentification, mais ne pas bloquer si elle échoue
-  try {
-    await authenticateSimWeGoClient(req, res, (error) => {
-      if (error) {
-        logger.warn('Optional authentication failed, continuing without auth', {
-          error: error.message,
-          ip: req.ip
-        });
-      }
-      next();
-    }, models);
-  } catch (error) {
-    logger.warn('Optional authentication error, continuing without auth', {
-      error: error.message,
+    logger.info('Client authenticated successfully', {
+      clientId: client.id,
+      clientName: client.name,
       ip: req.ip
     });
-    next();
+
+    return client;
   }
 }
 
 /**
- * Middleware de validation des rôles (pour une future extension)
+ * JWT Admin Authentication Strategy
  */
-function requireRole(roles) {
-  return (req, res, next) => {
-    if (!req.client) {
-      return res.status(401).json({
-        error: 'Authentication required',
-        code: 'AUTH_REQUIRED'
+class JwtAdminAuth {
+  static authenticate(req) {
+    const authHeader = req.headers.authorization;
+    const token = AuthUtils.extractBearerToken(authHeader);
+
+    if (!token) {
+      throw AuthUtils.createAuthError(401,
+        'Admin authentication required',
+        'Please provide: Authorization: Bearer [admin_token]',
+        'ADMIN_AUTH_MISSING'
+      );
+    }
+
+    try {
+      const adminSecret = process.env.ADMIN_JWT_SECRET || process.env.JWT_SECRET;
+      const decoded = jwt.verify(token, adminSecret);
+
+      if (!decoded || decoded.role !== 'admin') {
+        throw AuthUtils.createAuthError(403,
+          'Admin access required',
+          'This endpoint requires admin privileges',
+          'ADMIN_ACCESS_REQUIRED'
+        );
+      }
+
+      req.admin = {
+        id: decoded.id,
+        username: decoded.username,
+        role: decoded.role
+      };
+
+      logger.info('Admin authenticated successfully', {
+        adminId: decoded.id,
+        ip: req.ip,
+        method: req.method,
+        url: req.url
       });
+
+      return decoded;
+
+    } catch (error) {
+      if (error.name === 'JsonWebTokenError') {
+        throw AuthUtils.createAuthError(401,
+          'Invalid token',
+          'The provided token is invalid',
+          'TOKEN_INVALID'
+        );
+      }
+      
+      if (error.name === 'TokenExpiredError') {
+        throw AuthUtils.createAuthError(401,
+          'Token expired',
+          'The provided token has expired',
+          'TOKEN_EXPIRED'
+        );
+      }
+
+      logger.error('JWT authentication error', {
+        error: error.message,
+        stack: error.stack,
+        url: req.url,
+        ip: req.ip
+      });
+      
+      throw AuthUtils.createAuthError(500,
+        'Authentication error',
+        'Internal server error during authentication',
+        'AUTH_ERROR'
+      );
+    }
+  }
+}
+
+/**
+ * Monty Token Authentication Strategy
+ */
+class MontyTokenAuth {
+  static async authenticate(req, models) {
+    if (!req.client) {
+      return; // Skip if no client authenticated
     }
 
-    // Pour l'instant, tous les clients ont le même niveau d'accès
-    // Cette fonction peut être étendue plus tard avec un système de rôles
-    if (req.client.role && roles.includes(req.client.role)) {
-      return next();
+    // For login route, skip Monty token
+    const isLoginRoute = req.method === 'POST' && req.originalUrl.includes('/Agent/login');
+    if (isLoginRoute) {
+      logger.info('Login route detected, skipping Monty token', {
+        clientId: req.client.id
+      });
+      return;
     }
 
-    return res.status(403).json({
-      error: 'Insufficient permissions',
-      message: 'Your account does not have permission to access this resource',
-      code: 'AUTH_INSUFFICIENT_PERMISSIONS'
-    });
+    try {
+      const montyToken = await montyAuthService.getValidToken(req.client, models.TokenCache);
+      req.montyToken = montyToken;
+      
+      logger.debug('Monty token added to request', {
+        clientId: req.client.id,
+        hasToken: !!req.montyToken
+      });
+    } catch (error) {
+      logger.error('Failed to authenticate with Monty eSIM', {
+        clientId: req.client.id,
+        clientName: req.client.name,
+        error: error.message,
+        ip: req.ip
+      });
+
+      throw AuthUtils.createAuthError(500,
+        'Backend authentication failed',
+        'Unable to authenticate with eSIM service. Please try again or contact support.',
+        'MONTY_AUTH_FAILED'
+      );
+    }
+  }
+}
+
+/**
+ * Main Authentication Middleware Factory
+ */
+function createAuthMiddleware(strategies = [AuthStrategies.API_KEY]) {
+  return async (req, res, next) => {
+    try {
+      // Load models lazily to avoid circular dependencies
+      const { Client } = require('../models/Client');
+      const { TokenCache } = require('../models/TokenCache');
+      const models = { Client, TokenCache };
+
+      // Execute authentication strategies in order
+      for (const strategy of strategies) {
+        switch (strategy) {
+          case AuthStrategies.API_KEY:
+            await ApiKeyAuth.authenticate(req, models);
+            break;
+          
+          case AuthStrategies.JWT_ADMIN:
+            JwtAdminAuth.authenticate(req);
+            break;
+          
+          case AuthStrategies.MONTY_TOKEN:
+            await MontyTokenAuth.authenticate(req, models);
+            break;
+        }
+      }
+
+      next();
+
+    } catch (error) {
+      if (error.status) {
+        // This is an authentication error with proper status/message
+        return AuthUtils.sendAuthError(res, error);
+      }
+
+      // Unexpected error
+      logger.error('Authentication middleware error', {
+        error: error.message,
+        stack: error.stack,
+        ip: req.ip,
+        url: req.originalUrl
+      });
+
+      return AuthUtils.sendAuthError(res, AuthUtils.createAuthError(500,
+        'Authentication service error',
+        'Please try again or contact support if the problem persists',
+        'AUTH_SERVICE_ERROR'
+      ));
+    }
   };
 }
 
 /**
- * Middleware de logging pour les requêtes authentifiées
+ * Pre-configured middleware functions for common use cases
+ */
+const authMiddlewares = {
+  // For API endpoints requiring client authentication + Monty token
+  apiKey: createAuthMiddleware([AuthStrategies.API_KEY, AuthStrategies.MONTY_TOKEN]),
+  
+  // For API endpoints requiring only client authentication (like login)
+  apiKeyOnly: createAuthMiddleware([AuthStrategies.API_KEY]),
+  
+  // For admin endpoints
+  adminJwt: createAuthMiddleware([AuthStrategies.JWT_ADMIN]),
+  
+  // For endpoints that add Monty token if client is already authenticated
+  montyToken: createAuthMiddleware([AuthStrategies.MONTY_TOKEN]),
+
+  // Optional authentication (doesn't fail if no auth provided)
+  optional: async (req, res, next) => {
+    if (!req.headers.authorization) {
+      return next();
+    }
+    
+    try {
+      await authMiddlewares.apiKeyOnly(req, res, next);
+    } catch (error) {
+      logger.warn('Optional authentication failed, continuing without auth', {
+        error: error.message,
+        ip: req.ip
+      });
+      next();
+    }
+  }
+};
+
+/**
+ * Role-based access control middleware
+ */
+function requireRole(roles) {
+  return (req, res, next) => {
+    if (!req.client && !req.admin) {
+      return AuthUtils.sendAuthError(res, AuthUtils.createAuthError(401,
+        'Authentication required',
+        'Please authenticate to access this resource',
+        'AUTH_REQUIRED'
+      ));
+    }
+
+    const userRole = req.client?.role || req.admin?.role;
+    if (userRole && roles.includes(userRole)) {
+      return next();
+    }
+
+    return AuthUtils.sendAuthError(res, AuthUtils.createAuthError(403,
+      'Insufficient permissions',
+      'Your account does not have permission to access this resource',
+      'AUTH_INSUFFICIENT_PERMISSIONS'
+    ));
+  };
+}
+
+/**
+ * Request logging middleware for authenticated requests
  */
 function logAuthenticatedRequest(req, res, next) {
   if (req.client) {
-    logger.info('Authenticated request', {
+    logger.info('Authenticated API request', {
       clientId: req.client.id,
       clientName: req.client.name,
       method: req.method,
@@ -201,20 +337,36 @@ function logAuthenticatedRequest(req, res, next) {
       ip: req.ip,
       userAgent: req.get('User-Agent')
     });
+  } else if (req.admin) {
+    logger.info('Authenticated admin request', {
+      adminId: req.admin.id,
+      adminUsername: req.admin.username,
+      method: req.method,
+      url: req.originalUrl,
+      ip: req.ip
+    });
   }
   next();
 }
 
-// Wrapper pour compatibilité avec l'ancien middleware apiKeyAuth
-function apiKeyAuth(req, res, next) {
-  const { Client } = require('../models/Client');
-  const { TokenCache } = require('../models/TokenCache');
-  const models = { Client, TokenCache };
-  return authenticateSimWeGoClient(req, res, next, models);
-}
-
-module.exports = authenticateSimWeGoClient;
-module.exports.apiKeyAuth = apiKeyAuth;
-module.exports.optionalAuth = optionalAuth;
-module.exports.requireRole = requireRole;
-module.exports.logAuthenticatedRequest = logAuthenticatedRequest;
+module.exports = {
+  // Main middleware factory
+  createAuthMiddleware,
+  
+  // Pre-configured middlewares
+  ...authMiddlewares,
+  
+  // Utility functions
+  requireRole,
+  logAuthenticatedRequest,
+  
+  // Constants
+  AuthStrategies,
+  
+  // Backward compatibility (will be deprecated)
+  authenticateSimWeGoClient: authMiddlewares.apiKey,
+  apiKeyAuth: authMiddlewares.apiKeyOnly,
+  optionalAuth: authMiddlewares.optional,
+  jwtAuth: authMiddlewares.adminJwt,
+  montyTokenAuth: authMiddlewares.montyToken
+};

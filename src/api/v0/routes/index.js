@@ -3,8 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 // Import middleware
-const { apiKeyAuth } = require('../../../middleware/auth');
-const montyTokenAuth = require('../../../middleware/auth/montyTokenAuth');
+const { apiKeyOnly, apiKey } = require('../../../middleware/auth');
 
 // Import route modules
 const authRoutes = require('./auth');
@@ -20,30 +19,30 @@ const vouchersRoutes = require('./vouchers');
 const utilitiesRoutes = require('./utilities');
 
 // Client info routes (requires API key authentication)
-router.get('/client/info', apiKeyAuth, require('../controllers/clientController').getInfo);
+router.get('/client/info', apiKeyOnly, require('../controllers/clientController').getInfo);
 
 // Auth routes (login doesn't require auth, others do)
 router.use('/auth', authRoutes);
 
 // API routes (all require API key authentication)
-router.use('/bundles', apiKeyAuth, montyTokenAuth, bundlesRoutes);
+router.use('/bundles', apiKey, bundlesRoutes);
 
 // Global routes (countries, currencies, regions)
-router.get('/AvailableCountries', apiKeyAuth, montyTokenAuth, require('../controllers/bundlesController').getCountries);
-router.get('/AvailableCurrencies', apiKeyAuth, montyTokenAuth, require('../controllers/bundlesController').getCurrencies);
-router.post('/AvailableCurrencies', apiKeyAuth, montyTokenAuth, require('../controllers/bundlesController').manageCurrencies);
-router.post('/AvailableCurrenciesCSV', apiKeyAuth, montyTokenAuth, require('../controllers/bundlesController').manageCurrenciesCSV);
-router.get('/AvailableRegions', apiKeyAuth, montyTokenAuth, require('../controllers/bundlesController').getRegions);
-router.get('/v2/Bundles/Topup', apiKeyAuth, montyTokenAuth, require('../controllers/bundlesController').getCompatibleTopupV2);
-router.use('/orders', apiKeyAuth, montyTokenAuth, ordersRoutes);
-router.use('/agents', apiKeyAuth, agentsRoutes);
-router.use('/resellers', apiKeyAuth, resellersRoutes);
-router.get('/Reseller/Bundles/Scope', apiKeyAuth, montyTokenAuth, require('../controllers/resellerController').getResellerBundlesScope);
-router.use('/branches', apiKeyAuth, branchesRoutes);
-router.use('/roles', apiKeyAuth, rolesRoutes);
-router.use('/networks', apiKeyAuth, networksRoutes);
-router.use('/issues', apiKeyAuth, issuesRoutes);
-router.use('/vouchers', apiKeyAuth, vouchersRoutes);
-router.use('/utilities', apiKeyAuth, utilitiesRoutes);
+router.get('/AvailableCountries', apiKey, require('../controllers/bundlesController').getCountries);
+router.get('/AvailableCurrencies', apiKey, require('../controllers/bundlesController').getCurrencies);
+router.post('/AvailableCurrencies', apiKey, require('../controllers/bundlesController').manageCurrencies);
+router.post('/AvailableCurrenciesCSV', apiKey, require('../controllers/bundlesController').manageCurrenciesCSV);
+router.get('/AvailableRegions', apiKey, require('../controllers/bundlesController').getRegions);
+router.get('/v2/Bundles/Topup', apiKey, require('../controllers/bundlesController').getCompatibleTopupV2);
+router.use('/orders', apiKey, ordersRoutes);
+router.use('/agents', apiKeyOnly, agentsRoutes);
+router.use('/resellers', apiKeyOnly, resellersRoutes);
+router.get('/Reseller/Bundles/Scope', apiKey, require('../controllers/resellerController').getResellerBundlesScope);
+router.use('/branches', apiKeyOnly, branchesRoutes);
+router.use('/roles', apiKeyOnly, rolesRoutes);
+router.use('/networks', apiKeyOnly, networksRoutes);
+router.use('/issues', apiKeyOnly, issuesRoutes);
+router.use('/vouchers', apiKeyOnly, vouchersRoutes);
+router.use('/utilities', apiKeyOnly, utilitiesRoutes);
 
 module.exports = router;
