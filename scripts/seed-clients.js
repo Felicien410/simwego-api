@@ -33,7 +33,6 @@ async function seedClients() {
     // Données des clients initiaux
     const clientsData = [
       {
-        id: 'client1',
         name: 'Client 1',
         api_key: process.env.CLIENT1_API_KEY,
         monty_username: process.env.CLIENT1_MONTY_USERNAME,
@@ -41,7 +40,6 @@ async function seedClients() {
         active: true
       },
       {
-        id: 'client2', 
         name: 'Client 2',
         api_key: process.env.CLIENT2_API_KEY,
         monty_username: process.env.CLIENT2_MONTY_USERNAME,
@@ -51,9 +49,11 @@ async function seedClients() {
     ];
 
     // Valider que les credentials existent
-    for (const clientData of clientsData) {
+    for (let i = 0; i < clientsData.length; i++) {
+      const clientData = clientsData[i];
+      const clientNum = i + 1;
       if (!clientData.monty_username || !clientData.monty_password || !clientData.api_key) {
-        throw new Error(`Missing credentials for ${clientData.id}. Check environment variables CLIENT${clientData.id.slice(-1)}_API_KEY, CLIENT${clientData.id.slice(-1)}_MONTY_USERNAME, CLIENT${clientData.id.slice(-1)}_MONTY_PASSWORD.`);
+        throw new Error(`Missing credentials for ${clientData.name}. Check environment variables CLIENT${clientNum}_API_KEY, CLIENT${clientNum}_MONTY_USERNAME, CLIENT${clientNum}_MONTY_PASSWORD.`);
       }
     }
 

@@ -4,7 +4,9 @@ const { logger } = require('../../../config/database');
 class ClientController {
   async getInfo(req, res, next) {
     try {
-      const client = req.client;
+      // Using Passport.js authentication system
+      const client = req.user;
+      
       
       if (!client) {
         return res.status(404).json({
@@ -13,15 +15,16 @@ class ClientController {
         });
       }
 
-      // Return client information with expected structure
+      // Return client information with expected structure (manual because Passport client is plain object)
       const response = {
         client: {
           id: client.id,
           name: client.name,
-          monty_username: client.monty_username,
+          api_key: client.api_key,
           active: client.active,
-          created_at: client.createdAt,
-          updated_at: client.updatedAt
+          monty_username: client.monty_username,
+          created_at: client.created_at,
+          updated_at: client.updated_at
         },
         montyConnection: {
           authenticated: true,

@@ -3,16 +3,16 @@ const express = require('express');
 const router = express.Router();
 
 // Import middleware and controllers
-const { apiKeyOnly } = require('../../../middleware/auth');
+const { clientAuth } = require('../../../middleware/passportAuth');
 const authController = require('../controllers/authController');
 
 // Login endpoint (no auth required)
 router.post('/login', authController.login);
 
 // Token validation (requires API key)
-router.post('/validate', apiKeyOnly, authController.validateToken);
+router.post('/validate', clientAuth, authController.validateToken);
 
 // Logout (requires API key)
-router.post('/logout', apiKeyOnly, authController.logout);
+router.post('/logout', clientAuth, authController.logout);
 
 module.exports = router;

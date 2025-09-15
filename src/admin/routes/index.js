@@ -3,14 +3,14 @@ const express = require('express');
 const router = express.Router();
 
 // Import middleware
-const { adminJwt } = require('../../middleware/auth');
+const { adminAuth } = require('../../middleware/passportAuth');
 
 // Import controllers
 const statsController = require('../controllers/statsController');
 const clientController = require('../controllers/clientController');
 
 // All admin routes require JWT authentication
-router.use(adminJwt);
+router.use(adminAuth);
 
 // Stats routes
 router.get('/stats', statsController.getStats);

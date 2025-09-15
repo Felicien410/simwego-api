@@ -7,6 +7,7 @@ const path = require('path');
 // Imports locaux
 const environment = require('./config/environment');
 const { initializeDatabase, closeDatabase, logger } = require('./config/database');
+const { passport } = require('./config/passport');
 const { initClient } = require('./models/Client');
 const { initTokenCache } = require('./models/TokenCache');
 // Middleware d'authentification importé mais pas utilisé directement dans app.js
@@ -69,6 +70,10 @@ class SimWeGoAPI {
     // Parsing JSON avec limite généreuse pour les gros payloads
     this.app.use(express.json({ limit: '10mb' }));
     this.app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+    // Configuration Passport.js
+    this.app.use(passport.initialize());
+    // Note: passport.session() n'est pas nécessaire pour une API stateless avec tokens
 
     // Logging global des requêtes avec détails
     this.app.use((req, res, next) => {
@@ -275,172 +280,13 @@ class SimWeGoAPI {
 
   // Routes d'administration authentifiées
   setupAdminRoutes() {
-    // Information détaillée du client
-    const { apiKeyOnly } = require('./middleware/auth');
-    this.app.get('/client/info', 
-      apiKeyOnly,
-      async (req, res) => {
-        try {
-          const tokenCache = await this.models.TokenCache.findByPk(req.client.id);
-          
-          res.json({
-            client: req.client.toSafeJSON(),
-            
-            montyConnection: {
-              authenticated: !!tokenCache,
-              tokenValid: tokenCache ? tokenCache.isValid() : false,
-              expiresAt: tokenCache?.expires_at,
-              timeToExpiry: tokenCache?.getTimeToExpiry() + ' seconds',
-              agentId: tokenCache?.agent_id,
-              resellerId: tokenCache?.reseller_id
-            },
-            
-            api: {
-              architecture: 'Modular',
-              availableEndpoints: 82,
-              domains: {
-                agent: 10,
-                bundles: 18,
-                orders: 12,
-                reseller: 11,
-                branch: 5,
-                role: 6,
-                network: 6,
-                issue: 6,
-                voucher: 5,
-                utils: 3
-              }
-            },
-            
-            usage: {
-              baseUrl: '/api/v0/',
-              authRequired: true,
-              rateLimit: {
-                window: environment.security.rateLimitWindow / 1000 / 60 + ' minutes',
-                max: environment.security.rateLimitMax + ' requests'
-              }
-            },
-            
-            stats: {
-              lastTokenRefresh: tokenCache?.updatedAt,
-              accountCreated: req.client.createdAt
-            }
-          });
-        } catch (error) {
-          logger.error('Error getting client info:', error);
-          res.status(500).json({
-            error: 'Failed to get client information',
-            message: 'Please try again or contact support'
-          });
-        }
-      }
-    );
+    // Client info route - direct access for compatibility
+    const { clientAuth } = require('./middleware/passportAuth');
+    this.app.get('/client/info', clientAuth, require('./api/v0/controllers/clientController').getInfo);
 
-    // Diagnostics avancés du client
-    this.app.get('/client/diagnostics',
-      (req, res, next) => authMiddleware(req, res, next, this.models),
-      async (req, res) => {
-        try {
-          const montyAuthService = require('./services/montyAuth');
-          
-          // Test complet de la chaîne d'authentification
-          let authChainTest = {};
-          try {
-            const tokenResult = await montyAuthService.getValidToken(req.client, this.models.TokenCache);
-            authChainTest = {
-              clientAuth: 'success',
-              montyAuth: 'success',
-              tokenObtained: !!tokenResult,
-              tokenLength: tokenResult ? tokenResult.length : 0
-            };
-          } catch (error) {
-            authChainTest = {
-              clientAuth: 'success',
-              montyAuth: 'failed',
-              error: error.message,
-              recommendation: 'Check Monty credentials in database'
-            };
-          }
-          
-          // Stats de l'architecture
-          const architectureStats = {
-            controllersLoaded: 10,
-            routeFilesLoaded: 10,
-            middlewareChain: ['helmet', 'cors', 'json-parser', 'auth', 'proxy'],
-            servicePattern: 'Controller → ProxyService → Monty'
-          };
-          
-          res.json({
-            client: req.client.toSafeJSON(),
-            
-            diagnostics: {
-              authentication: authChainTest,
-              database: 'connected',
-              architecture: architectureStats,
-              systemHealth: {
-                memory: process.memoryUsage(),
-                uptime: Math.floor(process.uptime()) + ' seconds',
-                nodeVersion: process.version
-              }
-            },
-            
-            recommendations: this.generateClientRecommendations(req.client, authChainTest),
-            
-            testEndpoints: {
-              basic: '/api/v0/HealthCheck',
-              authentication: '/api/v0/Agent/login',
-              data: '/api/v0/Bundles'
-            }
-          });
-        } catch (error) {
-          logger.error('Error getting client diagnostics:', error);
-          res.status(500).json({
-            error: 'Failed to get diagnostics',
-            message: error.message
-          });
-        }
-      }
-    );
+    // Client diagnostics functionality moved to API v0 routes with Passport auth
   }
 
-  // Génération de recommandations intelligentes
-  generateClientRecommendations(client, authTest) {
-    const recommendations = [];
-    
-    if (authTest.montyAuth === 'failed') {
-      recommendations.push({
-        type: 'error',
-        message: 'Monty authentication failed',
-        action: 'Verify Monty credentials in client configuration',
-        priority: 'high'
-      });
-    } else if (authTest.montyAuth === 'success') {
-      recommendations.push({
-        type: 'success',
-        message: 'All systems operational',
-        action: 'API ready for production use',
-        priority: 'info'
-      });
-    }
-
-    if (!client.tokenCache || !client.tokenCache.isValid()) {
-      recommendations.push({
-        type: 'info',
-        message: 'Token will be obtained automatically',
-        action: 'No action required - authentication is automatic',
-        priority: 'low'
-      });
-    }
-
-    recommendations.push({
-      type: 'info',
-      message: 'Modular architecture active',
-      action: '82 endpoints available across 10 domains',
-      priority: 'info'
-    });
-
-    return recommendations;
-  }
 
   // Routes d'administration avancées
   setupAdvancedAdminRoutes() {

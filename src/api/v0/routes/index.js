@@ -2,8 +2,8 @@
 const express = require('express');
 const router = express.Router();
 
-// Import middleware
-const { apiKeyOnly, apiKey } = require('../../../middleware/auth');
+// Import Passport middleware
+const { clientAuth, clientAuthWithMonty } = require('../../../middleware/passportAuth');
 
 // Import route modules
 const authRoutes = require('./auth');
@@ -18,31 +18,31 @@ const issuesRoutes = require('./issues');
 const vouchersRoutes = require('./vouchers');
 const utilitiesRoutes = require('./utilities');
 
-// Client info routes (requires API key authentication)
-router.get('/client/info', apiKeyOnly, require('../controllers/clientController').getInfo);
+// Client info routes (requires API key authentication with Passport)
+router.get('/client/info', clientAuth, require('../controllers/clientController').getInfo);
 
 // Auth routes (login doesn't require auth, others do)
 router.use('/auth', authRoutes);
 
-// API routes (all require API key authentication)
-router.use('/bundles', apiKey, bundlesRoutes);
+// API routes (all require API key authentication with Monty proxy)
+router.use('/bundles', clientAuthWithMonty, bundlesRoutes);
 
 // Global routes (countries, currencies, regions)
-router.get('/AvailableCountries', apiKey, require('../controllers/bundlesController').getCountries);
-router.get('/AvailableCurrencies', apiKey, require('../controllers/bundlesController').getCurrencies);
-router.post('/AvailableCurrencies', apiKey, require('../controllers/bundlesController').manageCurrencies);
-router.post('/AvailableCurrenciesCSV', apiKey, require('../controllers/bundlesController').manageCurrenciesCSV);
-router.get('/AvailableRegions', apiKey, require('../controllers/bundlesController').getRegions);
-router.get('/v2/Bundles/Topup', apiKey, require('../controllers/bundlesController').getCompatibleTopupV2);
-router.use('/orders', apiKey, ordersRoutes);
-router.use('/agents', apiKeyOnly, agentsRoutes);
-router.use('/resellers', apiKeyOnly, resellersRoutes);
-router.get('/Reseller/Bundles/Scope', apiKey, require('../controllers/resellerController').getResellerBundlesScope);
-router.use('/branches', apiKeyOnly, branchesRoutes);
-router.use('/roles', apiKeyOnly, rolesRoutes);
-router.use('/networks', apiKeyOnly, networksRoutes);
-router.use('/issues', apiKeyOnly, issuesRoutes);
-router.use('/vouchers', apiKeyOnly, vouchersRoutes);
-router.use('/utilities', apiKeyOnly, utilitiesRoutes);
+router.get('/AvailableCountries', clientAuthWithMonty, require('../controllers/bundlesController').getCountries);
+router.get('/AvailableCurrencies', clientAuthWithMonty, require('../controllers/bundlesController').getCurrencies);
+router.post('/AvailableCurrencies', clientAuthWithMonty, require('../controllers/bundlesController').manageCurrencies);
+router.post('/AvailableCurrenciesCSV', clientAuthWithMonty, require('../controllers/bundlesController').manageCurrenciesCSV);
+router.get('/AvailableRegions', clientAuthWithMonty, require('../controllers/bundlesController').getRegions);
+router.get('/v2/Bundles/Topup', clientAuthWithMonty, require('../controllers/bundlesController').getCompatibleTopupV2);
+router.use('/orders', clientAuthWithMonty, ordersRoutes);
+router.use('/agents', clientAuth, agentsRoutes);
+router.use('/resellers', clientAuth, resellersRoutes);
+router.get('/Reseller/Bundles/Scope', clientAuthWithMonty, require('../controllers/resellerController').getResellerBundlesScope);
+router.use('/branches', clientAuth, branchesRoutes);
+router.use('/roles', clientAuth, rolesRoutes);
+router.use('/networks', clientAuth, networksRoutes);
+router.use('/issues', clientAuth, issuesRoutes);
+router.use('/vouchers', clientAuth, vouchersRoutes);
+router.use('/utilities', clientAuth, utilitiesRoutes);
 
 module.exports = router;

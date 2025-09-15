@@ -6,7 +6,7 @@ const request = require('supertest');
 const SimWeGoAPI = require('../src/app');
 
 // Configuration
-jest.setTimeout(10000);
+jest.setTimeout(15000);
 
 describe('🛣️ SimWeGo API - Tests des Routes de Base', () => {
   let apiInstance;

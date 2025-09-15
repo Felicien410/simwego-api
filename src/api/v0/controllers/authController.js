@@ -1,62 +1,60 @@
-// src/api/v0/controllers/authController.js - Authentication controller
-const montyAuth = require('../../../services/montyAuth');
+// src/api/v0/controllers/authController.js - Authentication controller with Passport
+const { passport } = require('../../../config/passport');
+const montyAuthService = require('../../../services/montyAuth');
 const { logger } = require('../../../config/database');
 
 class AuthController {
   async login(req, res, next) {
-    try {
-      const { username, password } = req.body;
-      
-      if (!username || !password) {
-        return res.status(400).json({
-          error: 'Missing credentials',
-          message: 'Username and password are required'
+    // Use Passport's Monty login strategy
+    passport.authenticate('monty-login', (err, user, info) => {
+      if (err) {
+        logger.error('Login error', {
+          error: err.message,
+          ip: req.ip
         });
+        return next(err);
       }
 
-      // Get client info from API key
-      const client = req.client;
-      if (!client) {
+      if (!user) {
+        logger.warn('Login failed', {
+          message: info?.message || 'Authentication failed',
+          ip: req.ip
+        });
+        
         return res.status(401).json({
-          error: 'Invalid API key',
-          message: 'Client not found for provided API key'
+          error: 'Authentication failed',
+          message: info?.message || 'Invalid username or password',
+          code: 'AUTH_FAILED'
         });
       }
 
-      // Authenticate with Monty using client's credentials
-      const tokens = await montyAuth.login(client.id, username, password);
-      
-      logger.info('User logged in successfully', {
-        clientId: client.id,
-        username: username,
+      // Login successful
+      logger.info('User logged in successfully via Passport', {
+        clientId: user.clientId,
+        username: user.username,
+        agentId: user.agentId,
+        resellerId: user.resellerId,
         ip: req.ip
       });
 
       res.json({
         success: true,
         message: 'Authentication successful',
+        user: {
+          clientId: user.clientId,
+          username: user.username,
+          agentId: user.agentId,
+          resellerId: user.resellerId
+        },
         tokens: {
-          access_token: tokens.access_token,
-          refresh_token: tokens.refresh_token,
-          expires_in: tokens.expires_in
+          access_token: user.tokenData.access_token,
+          refresh_token: user.tokenData.refresh_token,
+          expires_in: user.tokenData.expires_in,
+          token_type: user.tokenData.token_type || 'Bearer'
         }
       });
 
-    } catch (error) {
-      logger.error('Login error', {
-        error: error.message,
-        ip: req.ip
-      });
-      
-      if (error.message.includes('Invalid credentials')) {
-        return res.status(401).json({
-          error: 'Authentication failed',
-          message: 'Invalid username or password'
-        });
-      }
-      
-      next(error);
-    }
+    })(req, res, next);
   }
 
   async validateToken(req, res, next) {
@@ -66,16 +64,40 @@ class AuthController {
       if (!token) {
         return res.status(400).json({
           error: 'Missing token',
-          message: 'Token is required'
+          message: 'Token is required',
+          code: 'VALIDATION_MISSING_TOKEN'
         });
       }
 
-      const client = req.client;
-      const isValid = await montyAuth.validateToken(client.id, token);
+      // Le client est déjà authentifié via Passport middleware
+      const client = req.user;
+      if (!client) {
+        return res.status(401).json({
+          error: 'Authentication required',
+          message: 'Please authenticate with your API key first',
+          code: 'VALIDATION_AUTH_REQUIRED'
+        });
+      }
+
+      // Valider le token via le service TokenCache
+      const { TokenCache } = require('../../../models/TokenCache');
+      const cachedToken = await TokenCache.findByPk(client.id);
+      
+      const isValid = cachedToken && cachedToken.access_token === token && cachedToken.isValid();
+      
+      logger.info('Token validation performed', {
+        clientId: client.id,
+        valid: isValid,
+        ip: req.ip
+      });
       
       res.json({
         valid: isValid,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        client: {
+          id: client.id,
+          name: client.name
+        }
       });
 
     } catch (error) {
@@ -89,19 +111,28 @@ class AuthController {
 
   async logout(req, res, next) {
     try {
-      const client = req.client;
+      const client = req.user;
       
-      // Clear cached tokens for client
-      await montyAuth.clearTokens(client.id);
+      if (!client) {
+        return res.status(401).json({
+          error: 'Authentication required',
+          message: 'Please authenticate with your API key first',
+          code: 'LOGOUT_AUTH_REQUIRED'
+        });
+      }
       
-      logger.info('User logged out', {
+      // Clear cached tokens for client via Monty service
+      await montyAuthService.invalidateToken(client.id, require('../../../models/TokenCache').TokenCache);
+      
+      logger.info('User logged out via Passport', {
         clientId: client.id,
         ip: req.ip
       });
 
       res.json({
         success: true,
-        message: 'Logout successful'
+        message: 'Logout successful',
+        timestamp: new Date().toISOString()
       });
 
     } catch (error) {
