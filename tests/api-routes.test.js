@@ -11,8 +11,8 @@ jest.setTimeout(10000);
 describe('🛣️ SimWeGo API - Tests des Routes de Base', () => {
   let apiInstance;
   let app;
-  const CLIENT1_API_KEY = process.env.CLIENT1_API_KEY ;
-  const CLIENT2_API_KEY = process.env.CLIENT2_API_KEY ;
+  let CLIENT1_API_KEY;
+  let CLIENT2_API_KEY;
 
   beforeAll(async () => {
     console.log('\n🚀 === TESTS ROUTES API SIMWEGO ===\n');
@@ -25,6 +25,27 @@ describe('🛣️ SimWeGo API - Tests des Routes de Base', () => {
     apiInstance.setupAdvancedAdminRoutes();
     apiInstance.setupErrorHandling();
     app = apiInstance.app;
+
+    // Récupérer les vraies API keys depuis l'API admin
+    const request = require('supertest');
+    try {
+      const clientsResponse = await request(app)
+        .get('/admin/clients')
+        .set('Authorization', `Bearer ${process.env.TEST_ADMIN_TOKEN}`);
+      
+      if (clientsResponse.status === 200 && clientsResponse.body.clients.length >= 2) {
+        // Utiliser les clients existants
+        CLIENT1_API_KEY = clientsResponse.body.clients.find(c => c.monty_username === 'montytest')?.api_key;
+        CLIENT2_API_KEY = clientsResponse.body.clients.find(c => c.monty_username === 'SimWeGo')?.api_key;
+        console.log('🔑 API Keys récupérées depuis la DB:', CLIENT1_API_KEY?.substring(0, 20) + '...', CLIENT2_API_KEY?.substring(0, 20) + '...');
+      }
+    } catch (error) {
+      console.log('⚠️ Erreur récupération API keys, utilisation du .env');
+    }
+    
+    // Fallback vers les valeurs du .env si pas trouvées
+    if (!CLIENT1_API_KEY) CLIENT1_API_KEY = process.env.CLIENT1_API_KEY;
+    if (!CLIENT2_API_KEY) CLIENT2_API_KEY = process.env.CLIENT2_API_KEY;
   });
 
   describe('🏥 Routes Publiques', () => {
@@ -87,9 +108,9 @@ describe('🛣️ SimWeGo API - Tests des Routes de Base', () => {
       
       if (response.status === 200) {
         expect(response.body).toHaveProperty('client');
-        expect(response.body.client.id).toBe('client1');
+        expect(typeof response.body.client.id).toBe('number'); // ID numérique avec auto-increment
         expect(response.body.client.name).toMatch(/Client 1/);
-        console.log('✅ Client1 authentifié avec succès');
+        console.log('✅ Client1 authentifié avec succès, ID:', response.body.client.id);
       } else {
         console.log('⚠️ Client1 authentification échouée (peut être lié à Monty)');
         expect(response.status).toBeGreaterThanOrEqual(400);
@@ -108,9 +129,9 @@ describe('🛣️ SimWeGo API - Tests des Routes de Base', () => {
       
       if (response.status === 200) {
         expect(response.body).toHaveProperty('client');
-        expect(response.body.client.id).toBe('client2');
+        expect(typeof response.body.client.id).toBe('number'); // ID numérique avec auto-increment
         expect(response.body.client.name).toBe('Client 2');
-        console.log('✅ Client2 authentifié avec succès');
+        console.log('✅ Client2 authentifié avec succès, ID:', response.body.client.id);
       } else {
         console.log('⚠️ Client2 authentification échouée (peut être lié à Monty)');
         expect(response.status).toBeGreaterThanOrEqual(400);

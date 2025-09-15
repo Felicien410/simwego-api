@@ -1,4 +1,5 @@
-// =============================================================================
+// =====================
+// ========================================================
 // tests/integration.test.js - Tests d'intégration réels SimWeGo API
 // =============================================================================
 
@@ -11,8 +12,8 @@ jest.setTimeout(30000);
 // Global variables for all test suites
 let apiInstance;
 let app;
-const CLIENT1_API_KEY = process.env.CLIENT1_API_KEY;
-const CLIENT2_API_KEY = process.env.CLIENT2_API_KEY;
+let CLIENT1_API_KEY;
+let CLIENT2_API_KEY;
 const ADMIN_TOKEN = process.env.TEST_ADMIN_TOKEN;
 
 describe('🚀 SimWeGo API - Tests d\'Intégration Réels', () => {
@@ -28,6 +29,26 @@ describe('🚀 SimWeGo API - Tests d\'Intégration Réels', () => {
     apiInstance.setupAdvancedAdminRoutes();
     apiInstance.setupErrorHandling();
     app = apiInstance.app;
+
+    // Récupérer les vraies API keys depuis l'API admin
+    const request = require('supertest');
+    try {
+      const clientsResponse = await request(app)
+        .get('/admin/clients')
+        .set('Authorization', `Bearer ${ADMIN_TOKEN}`);
+      
+      if (clientsResponse.status === 200 && clientsResponse.body.clients.length >= 2) {
+        CLIENT1_API_KEY = clientsResponse.body.clients.find(c => c.monty_username === 'montytest')?.api_key;
+        CLIENT2_API_KEY = clientsResponse.body.clients.find(c => c.monty_username === 'SimWeGo')?.api_key;
+        console.log('🔑 API Keys récupérées:', CLIENT1_API_KEY?.substring(0, 20) + '...', CLIENT2_API_KEY?.substring(0, 20) + '...');
+      }
+    } catch (error) {
+      console.log('⚠️ Erreur récupération API keys:', error.message);
+    }
+    
+    // Fallback vers les valeurs du .env si pas trouvées
+    if (!CLIENT1_API_KEY) CLIENT1_API_KEY = process.env.CLIENT1_API_KEY;
+    if (!CLIENT2_API_KEY) CLIENT2_API_KEY = process.env.CLIENT2_API_KEY;
   });
 
   // Note: Database cleanup moved to global afterAll at end of file
@@ -65,7 +86,7 @@ describe('🚀 SimWeGo API - Tests d\'Intégration Réels', () => {
         .expect(200);
 
       expect(response.body).toHaveProperty('client');
-      expect(response.body.client.id).toBe('client1');
+      expect(typeof response.body.client.id).toBe('number'); // Auto-increment ID
       expect(['Client 1', 'Client 1 Modified']).toContain(response.body.client.name);
       expect(response.body.client.monty_username).toBe('montytest');
       expect(response.body.client.active).toBe(true);
@@ -91,7 +112,7 @@ describe('🚀 SimWeGo API - Tests d\'Intégration Réels', () => {
         .expect(200);
 
       expect(response.body).toHaveProperty('client');
-      expect(response.body.client.id).toBe('client2');
+      expect(typeof response.body.client.id).toBe('number'); // Auto-increment ID
       expect(response.body.client.name).toBe('Client 2');
       expect(response.body.client.monty_username).toBe('SimWeGo');
       expect(response.body.client.active).toBe(true);
@@ -260,12 +281,12 @@ describe('🛡️ Admin API - Tests d\'Intégration', () => {
 
     test('should test Monty connection for client1', async () => {
       const response = await request(app)
-        .post('/admin/clients/client1/test')
+        .post('/admin/clients/10/test')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .expect(200);
 
       expect(response.body).toHaveProperty('success', true);
-      expect(response.body).toHaveProperty('client_id', 'client1');
+      expect(response.body).toHaveProperty('client_id', '10');
       expect(response.body).toHaveProperty('agent_id');
       expect(response.body).toHaveProperty('reseller_id');
 
@@ -300,7 +321,7 @@ describe('🚦 Performance et Charge', () => {
     
     responses.forEach((response) => {
       expect(response.status).toBe(200);
-      expect(response.body.client.id).toBe('client1');
+      expect(typeof response.body.client.id).toBe('number');
     });
 
     console.log(`✅ ${concurrentRequests} requêtes concurrentes réussies`);

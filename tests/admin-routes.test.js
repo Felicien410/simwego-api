@@ -153,7 +153,7 @@ describe('🛡️ SimWeGo API - Tests des Routes Admin', () => {
       console.log('📡 Test: Test client inexistant');
       
       const response = await request(app)
-        .post('/admin/clients/client_inexistant/test')
+        .post('/admin/clients/99999/test')
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
         .set('Content-Type', 'application/json')
         .expect(404);
@@ -191,14 +191,13 @@ describe('🛡️ SimWeGo API - Tests des Routes Admin', () => {
       }
     });
 
-    test('POST /admin/clients - Création client (simulation)', async () => {
-      console.log('📡 Test: Tentative création client');
+    test('POST /admin/clients - Création client avec auto-increment', async () => {
+      console.log('📡 Test: Création client avec auto-increment');
       
       const newClient = {
-        id: 'test_client',
-        name: 'Test Client',
-        monty_username: 'test_user',
-        monty_password: 'test_pass',
+        name: 'Test Client Auto',
+        monty_username: process.env.CLIENT1_MONTY_USERNAME || 'test_user',
+        monty_password: process.env.CLIENT1_MONTY_PASSWORD || 'test_pass',
         active: true
       };
       
@@ -210,14 +209,99 @@ describe('🛡️ SimWeGo API - Tests des Routes Admin', () => {
 
       console.log('✅ Status:', response.status);
       
-      // La route peut soit exister soit ne pas être implémentée
-      expect([200, 201, 400, 404, 405, 409, 500]).toContain(response.status);
-      
-      if ([200, 201].includes(response.status)) {
-        console.log('✅ Création client supportée');
+      if (response.status === 201) {
+        expect(response.body).toHaveProperty('id');
+        expect(response.body).toHaveProperty('api_key');
+        expect(response.body).toHaveProperty('name', 'Test Client Auto');
+        expect(typeof response.body.id).toBe('number');
+        
+        console.log('📊 Client créé avec ID:', response.body.id);
+        console.log('🔑 API Key générée:', response.body.api_key);
+        console.log('✅ Création client avec auto-increment réussie');
+        
+        // Test la connexion Monty pour ce nouveau client
+        const testResponse = await request(app)
+          .post(`/admin/clients/${response.body.id}/test`)
+          .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+          .set('Content-Type', 'application/json');
+          
+        console.log('🔧 Test connexion Monty Status:', testResponse.status);
+        
+        if (testResponse.status === 200 && testResponse.body.success) {
+          expect(testResponse.body).toHaveProperty('agent_id');
+          expect(testResponse.body).toHaveProperty('reseller_id');
+          console.log('📊 Agent ID:', testResponse.body.agent_id);
+          console.log('📊 Reseller ID:', testResponse.body.reseller_id);
+          console.log('✅ Connexion Monty réussie');
+        }
+        
+        // Nettoyage - Supprimer le client de test
+        const deleteResponse = await request(app)
+          .delete(`/admin/clients/${response.body.id}`)
+          .set('Authorization', `Bearer ${ADMIN_TOKEN}`);
+          
+        console.log('🗑️ Suppression Status:', deleteResponse.status);
+        if (deleteResponse.status === 200) {
+          console.log('✅ Client de test supprimé');
+        }
+        
       } else {
-        console.log('ℹ️ Création non supportée ou erreur (normal)');
+        console.log('⚠️ Création client échouée:', response.body);
+        expect([400, 409, 500]).toContain(response.status);
       }
+    });
+
+    test('Workflow complet: Création → Test → Suppression', async () => {
+      console.log('📡 Test: Workflow complet avec auto-increment');
+      
+      // 1. Création
+      const createResponse = await request(app)
+        .post('/admin/clients')
+        .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+        .set('Content-Type', 'application/json')
+        .send({
+          name: 'Workflow Test Client',
+          monty_username: process.env.CLIENT1_MONTY_USERNAME || 'test_user',
+          monty_password: process.env.CLIENT1_MONTY_PASSWORD || 'test_pass',
+          active: true
+        });
+
+      if (createResponse.status !== 201) {
+        console.log('⚠️ Création échouée, test ignoré');
+        return;
+      }
+
+      const clientId = createResponse.body.id;
+      console.log('✅ 1. Client créé avec ID:', clientId);
+
+      // 2. Test connexion
+      const testResponse = await request(app)
+        .post(`/admin/clients/${clientId}/test`)
+        .set('Authorization', `Bearer ${ADMIN_TOKEN}`)
+        .set('Content-Type', 'application/json');
+
+      console.log('✅ 2. Test connexion Status:', testResponse.status);
+      if (testResponse.body.success) {
+        console.log('📊 Agent/Reseller IDs récupérés');
+      }
+
+      // 3. Vérification dans la liste
+      const listResponse = await request(app)
+        .get('/admin/clients')
+        .set('Authorization', `Bearer ${ADMIN_TOKEN}`);
+
+      const clientExists = listResponse.body.clients.some(c => c.id === clientId);
+      expect(clientExists).toBe(true);
+      console.log('✅ 3. Client trouvé dans la liste');
+
+      // 4. Suppression
+      const deleteResponse = await request(app)
+        .delete(`/admin/clients/${clientId}`)
+        .set('Authorization', `Bearer ${ADMIN_TOKEN}`);
+
+      expect(deleteResponse.status).toBe(200);
+      console.log('✅ 4. Client supprimé avec succès');
+      console.log('🎉 Workflow complet terminé');
     });
   });
 
