@@ -96,7 +96,19 @@ class MontyAuthService {
    */
   async authenticateWithMonty(client) {
     try {
-      const credentials = client.getMontyCredentials();
+      // Le client est un objet plain (pas une instance Sequelize), déchiffrer manuellement
+      const encryptionService = require('./encryption');
+      
+      logger.debug('Attempting to decrypt password', {
+        clientId: client.id,
+        hasEncryptedPassword: !!client.monty_password_encrypted,
+        encryptedPasswordFormat: client.monty_password_encrypted ? client.monty_password_encrypted.substring(0, 20) + '...' : 'null'
+      });
+      
+      const credentials = {
+        username: client.monty_username,
+        password: encryptionService.decryptPassword(client.monty_password_encrypted)
+      };
       
       
       logger.debug('Authenticating with Monty', {

@@ -48,7 +48,7 @@ class ProxyService {
       }
 
       logger.info('Proxying to Monty', {
-        client: req.client?.name,
+        client: req.user?.name,
         method: req.method,
         endpoint: montyEndpoint,
         ip: req.ip,
@@ -57,7 +57,7 @@ class ProxyService {
 
       const response = await axios(config);
       
-      res.setHeader('X-SimWeGo-Client', req.client?.id || 'unknown');
+      res.setHeader('X-SimWeGo-Client', req.user?.id || 'unknown');
       res.setHeader('X-SimWeGo-Proxy', 'true');
       res.setHeader('X-SimWeGo-Version', '1.0.0');
       
@@ -68,9 +68,9 @@ class ProxyService {
       const isLoginRoute = montyEndpoint === '/Agent/login' && req.method === 'POST';
       
       // Si erreur 401 et qu'on n'a pas déjà retry, tenter de refresh le token
-      if (error.response?.status === 401 && retryCount === 0 && req.client && !isLoginRoute) {
+      if (error.response?.status === 401 && retryCount === 0 && req.user && !isLoginRoute) {
         logger.warn('Got 401, attempting to refresh token and retry', {
-          client: req.client?.name,
+          client: req.user?.name,
           endpoint: montyEndpoint,
           retryCount
         });
@@ -79,12 +79,20 @@ class ProxyService {
           // Import ici pour éviter les dépendances circulaires
           const montyAuthService = require('./montyAuth');
           const { TokenCache } = require('../models/TokenCache');
+          const { Client } = require('../models/Client');
+
+          // Récupérer le client complet depuis la DB (avec le mot de passe chiffré)
+          const client = await Client.findByPk(req.user.id);
+          
+          if (!client) {
+            throw new Error('Client not found');
+          }
 
           // Invalider le token actuel
-          await montyAuthService.invalidateToken(req.client.id, TokenCache);
+          await montyAuthService.invalidateToken(client.id, TokenCache);
           
           // Obtenir un nouveau token (avec refresh ou re-login automatique)
-          const newToken = await montyAuthService.getValidToken(req.client, TokenCache);
+          const newToken = await montyAuthService.getValidToken(client, TokenCache);
           req.montyToken = newToken;
 
           // Retry une seule fois
@@ -92,7 +100,7 @@ class ProxyService {
 
         } catch (refreshError) {
           logger.error('Failed to refresh token after 401', {
-            client: req.client?.name,
+            client: req.user?.name,
             endpoint: montyEndpoint,
             error: refreshError.message
           });
@@ -101,7 +109,7 @@ class ProxyService {
       }
 
       logger.error('Proxy error', {
-        client: req.client?.name,
+        client: req.user?.name,
         endpoint: montyEndpoint,
         error: error.message,
         status: error.response?.status,
