@@ -12,8 +12,8 @@ jest.setTimeout(30000);
 // Global variables for all test suites
 let apiInstance;
 let app;
-let CLIENT1_API_KEY;
-let CLIENT2_API_KEY;
+let CLIENT_TEST_API_KEY;
+let CLIENT_REAL_API_KEY;
 const ADMIN_TOKEN = process.env.TEST_ADMIN_TOKEN;
 
 describe('🚀 SimWeGo API - Tests d\'Intégration Réels', () => {
@@ -38,17 +38,17 @@ describe('🚀 SimWeGo API - Tests d\'Intégration Réels', () => {
         .set('Authorization', `Bearer ${ADMIN_TOKEN}`);
       
       if (clientsResponse.status === 200 && clientsResponse.body.clients.length >= 2) {
-        CLIENT1_API_KEY = clientsResponse.body.clients.find(c => c.monty_username === 'montytest')?.api_key;
-        CLIENT2_API_KEY = clientsResponse.body.clients.find(c => c.monty_username === 'SimWeGo')?.api_key;
-        console.log('🔑 API Keys récupérées:', CLIENT1_API_KEY?.substring(0, 20) + '...', CLIENT2_API_KEY?.substring(0, 20) + '...');
+        CLIENT_TEST_API_KEY = clientsResponse.body.clients.find(c => c.monty_username === 'montytest')?.api_key;
+        CLIENT_REAL_API_KEY = clientsResponse.body.clients.find(c => c.monty_username === 'SimWeGo')?.api_key;
+        console.log('🔑 API Keys récupérées:', CLIENT_TEST_API_KEY?.substring(0, 20) + '...', CLIENT_REAL_API_KEY?.substring(0, 20) + '...');
       }
     } catch (error) {
       console.log('⚠️ Erreur récupération API keys:', error.message);
     }
     
     // Fallback vers les valeurs du .env si pas trouvées
-    if (!CLIENT1_API_KEY) CLIENT1_API_KEY = process.env.CLIENT1_API_KEY;
-    if (!CLIENT2_API_KEY) CLIENT2_API_KEY = process.env.CLIENT2_API_KEY;
+    if (!CLIENT_TEST_API_KEY) CLIENT_TEST_API_KEY = process.env.CLIENT_TEST_API_KEY;
+    if (!CLIENT_REAL_API_KEY) CLIENT_REAL_API_KEY = process.env.CLIENT_REAL_API_KEY;
   });
 
   // Note: Database cleanup moved to global afterAll at end of file
@@ -77,12 +77,12 @@ describe('🚀 SimWeGo API - Tests d\'Intégration Réels', () => {
   describe('🔐 Authentification et Client Info', () => {
     test('should authenticate client1 and get real info', async () => {
       console.log('📋 Curl equivalent:');
-      console.log(`curl -H "Authorization: Bearer ${CLIENT1_API_KEY}" http://localhost:3001/client/info`);
+      console.log(`curl -H "Authorization: Bearer ${CLIENT_TEST_API_KEY}" http://localhost:3001/client/info`);
       console.log('');
       
       const response = await request(app)
         .get('/client/info')
-        .set('Authorization', `Bearer ${CLIENT1_API_KEY}`)
+        .set('Authorization', `Bearer ${CLIENT_TEST_API_KEY}`)
         .expect(200);
 
       expect(response.body).toHaveProperty('client');
@@ -103,12 +103,12 @@ describe('🚀 SimWeGo API - Tests d\'Intégration Réels', () => {
 
     test('should authenticate client2 and get real info', async () => {
       console.log('📋 Curl equivalent:');
-      console.log(`curl -H "Authorization: Bearer ${CLIENT2_API_KEY}" http://localhost:3001/client/info`);
+      console.log(`curl -H "Authorization: Bearer ${CLIENT_REAL_API_KEY}" http://localhost:3001/client/info`);
       console.log('');
       
       const response = await request(app)
         .get('/client/info')
-        .set('Authorization', `Bearer ${CLIENT2_API_KEY}`)
+        .set('Authorization', `Bearer ${CLIENT_REAL_API_KEY}`)
         .expect(200);
 
       expect(response.body).toHaveProperty('client');
@@ -140,12 +140,12 @@ describe('🚀 SimWeGo API - Tests d\'Intégration Réels', () => {
   describe('📦 Bundles - Données Réelles Monty', () => {
     test('should get real bundles from Monty for client1', async () => {
       console.log('📋 Curl equivalent:');
-      console.log(`curl -H "Authorization: Bearer ${CLIENT1_API_KEY}" http://localhost:3001/api/v0/Bundles`);
+      console.log(`curl -H "Authorization: Bearer ${CLIENT_TEST_API_KEY}" http://localhost:3001/api/v0/Bundles`);
       console.log('');
       
       const response = await request(app)
         .get('/api/v0/Bundles')
-        .set('Authorization', `Bearer ${CLIENT1_API_KEY}`)
+        .set('Authorization', `Bearer ${CLIENT_TEST_API_KEY}`)
         .expect(200);
 
       expect(response.body).toHaveProperty('bundles');
@@ -166,12 +166,12 @@ describe('🚀 SimWeGo API - Tests d\'Intégration Réels', () => {
 
     test('should get real bundles from Monty for client2', async () => {
       console.log('📋 Curl equivalent:');
-      console.log(`curl -H "Authorization: Bearer ${CLIENT2_API_KEY}" http://localhost:3001/api/v0/Bundles`);
+      console.log(`curl -H "Authorization: Bearer ${CLIENT_REAL_API_KEY}" http://localhost:3001/api/v0/Bundles`);
       console.log('');
       
       const response = await request(app)
         .get('/api/v0/Bundles')
-        .set('Authorization', `Bearer ${CLIENT2_API_KEY}`)
+        .set('Authorization', `Bearer ${CLIENT_REAL_API_KEY}`)
         .expect(200);
 
       expect(response.body).toHaveProperty('bundles');
@@ -185,12 +185,12 @@ describe('🚀 SimWeGo API - Tests d\'Intégration Réels', () => {
   describe('💰 Sales Dashboard - Données Réelles', () => {
     test('should get real sales dashboard for client1', async () => {
       console.log('📋 Curl equivalent:');
-      console.log(`curl -H "Authorization: Bearer ${CLIENT1_API_KEY}" http://localhost:3001/api/v0/Orders/Dashboard`);
+      console.log(`curl -H "Authorization: Bearer ${CLIENT_TEST_API_KEY}" http://localhost:3001/api/v0/Orders/Dashboard`);
       console.log('');
       
       const response = await request(app)
         .get('/api/v0/Orders/Dashboard')
-        .set('Authorization', `Bearer ${CLIENT1_API_KEY}`)
+        .set('Authorization', `Bearer ${CLIENT_TEST_API_KEY}`)
         .expect(200);
 
       expect(response.body).toHaveProperty('response_code', '0200');
@@ -210,12 +210,12 @@ describe('🚀 SimWeGo API - Tests d\'Intégration Réels', () => {
 
     test('should get real sales dashboard for client2', async () => {
       console.log('📋 Curl equivalent:');
-      console.log(`curl -H "Authorization: Bearer ${CLIENT2_API_KEY}" http://localhost:3001/api/v0/Orders/Dashboard`);
+      console.log(`curl -H "Authorization: Bearer ${CLIENT_REAL_API_KEY}" http://localhost:3001/api/v0/Orders/Dashboard`);
       console.log('');
       
       const response = await request(app)
         .get('/api/v0/Orders/Dashboard')
-        .set('Authorization', `Bearer ${CLIENT2_API_KEY}`)
+        .set('Authorization', `Bearer ${CLIENT_REAL_API_KEY}`)
         .expect(200);
 
       expect(response.body).toHaveProperty('response_code', '0200');
@@ -303,7 +303,7 @@ describe('🛡️ Admin API - Tests d\'Intégration', () => {
 describe('🚦 Performance et Charge', () => {
   test('should handle concurrent requests', async () => {
     console.log('📋 Curl equivalent (run 5 times simultaneously):');
-    console.log(`curl -H "Authorization: Bearer ${CLIENT1_API_KEY}" http://localhost:3001/client/info`);
+    console.log(`curl -H "Authorization: Bearer ${CLIENT_TEST_API_KEY}" http://localhost:3001/client/info`);
     console.log('');
     
     const promises = [];
@@ -313,7 +313,7 @@ describe('🚦 Performance et Charge', () => {
       promises.push(
         request(app)
           .get('/client/info')
-          .set('Authorization', `Bearer ${CLIENT1_API_KEY}`)
+          .set('Authorization', `Bearer ${CLIENT_TEST_API_KEY}`)
       );
     }
 
@@ -329,14 +329,14 @@ describe('🚦 Performance et Charge', () => {
 
   test('should handle bundles requests performance', async () => {
     console.log('📋 Curl equivalent:');
-    console.log(`curl -H "Authorization: Bearer ${CLIENT1_API_KEY}" http://localhost:3001/api/v0/Bundles`);
+    console.log(`curl -H "Authorization: Bearer ${CLIENT_TEST_API_KEY}" http://localhost:3001/api/v0/Bundles`);
     console.log('');
     
     const startTime = Date.now();
     
     const response = await request(app)
       .get('/api/v0/Bundles')
-      .set('Authorization', `Bearer ${CLIENT1_API_KEY}`)
+      .set('Authorization', `Bearer ${CLIENT_TEST_API_KEY}`)
       .expect(200);
 
     const endTime = Date.now();

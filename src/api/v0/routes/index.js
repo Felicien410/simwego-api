@@ -21,11 +21,22 @@ const utilitiesRoutes = require('./utilities');
 // Client info routes (requires API key authentication with Passport)
 router.get('/client/info', clientAuth, require('../controllers/clientController').getInfo);
 
+// Health check endpoint that tests Monty connection
+router.get('/HealthCheck', clientAuthWithMonty, require('../controllers/utilsController').healthCheck);
+
 // Auth routes (login doesn't require auth, others do)
 router.use('/auth', authRoutes);
 
-// API routes (all require API key authentication with Monty proxy)
-router.use('/bundles', clientAuthWithMonty, bundlesRoutes);
+// API routes (Monty convention with capitals) - all require Monty authentication
+router.use('/Bundles', clientAuthWithMonty, bundlesRoutes);
+router.use('/Orders', clientAuthWithMonty, ordersRoutes);
+router.use('/Agent', clientAuthWithMonty, agentsRoutes);
+router.use('/Reseller', clientAuthWithMonty, resellersRoutes);
+router.use('/Branch', clientAuthWithMonty, branchesRoutes);
+router.use('/Role', clientAuthWithMonty, rolesRoutes);
+router.use('/NetworkList', clientAuthWithMonty, networksRoutes);
+router.use('/IssueReport', clientAuthWithMonty, issuesRoutes);
+router.use('/Voucher', clientAuthWithMonty, vouchersRoutes);
 
 // Global routes (countries, currencies, regions)
 router.get('/AvailableCountries', clientAuthWithMonty, require('../controllers/bundlesController').getCountries);
@@ -34,15 +45,9 @@ router.post('/AvailableCurrencies', clientAuthWithMonty, require('../controllers
 router.post('/AvailableCurrenciesCSV', clientAuthWithMonty, require('../controllers/bundlesController').manageCurrenciesCSV);
 router.get('/AvailableRegions', clientAuthWithMonty, require('../controllers/bundlesController').getRegions);
 router.get('/v2/Bundles/Topup', clientAuthWithMonty, require('../controllers/bundlesController').getCompatibleTopupV2);
-router.use('/orders', clientAuthWithMonty, ordersRoutes);
-router.use('/agents', clientAuth, agentsRoutes);
-router.use('/resellers', clientAuth, resellersRoutes);
 router.get('/Reseller/Bundles/Scope', clientAuthWithMonty, require('../controllers/resellerController').getResellerBundlesScope);
-router.use('/branches', clientAuth, branchesRoutes);
-router.use('/roles', clientAuth, rolesRoutes);
-router.use('/networks', clientAuth, networksRoutes);
-router.use('/issues', clientAuth, issuesRoutes);
-router.use('/vouchers', clientAuth, vouchersRoutes);
+
+// Utility routes
 router.use('/utilities', clientAuth, utilitiesRoutes);
 
 module.exports = router;

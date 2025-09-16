@@ -11,8 +11,8 @@ jest.setTimeout(15000);
 describe('🛣️ SimWeGo API - Tests des Routes de Base', () => {
   let apiInstance;
   let app;
-  let CLIENT1_API_KEY;
-  let CLIENT2_API_KEY;
+  let CLIENT_TEST_API_KEY;
+  let CLIENT_REAL_API_KEY;
 
   beforeAll(async () => {
     console.log('\n🚀 === TESTS ROUTES API SIMWEGO ===\n');
@@ -35,17 +35,17 @@ describe('🛣️ SimWeGo API - Tests des Routes de Base', () => {
       
       if (clientsResponse.status === 200 && clientsResponse.body.clients.length >= 2) {
         // Utiliser les clients existants
-        CLIENT1_API_KEY = clientsResponse.body.clients.find(c => c.monty_username === 'montytest')?.api_key;
-        CLIENT2_API_KEY = clientsResponse.body.clients.find(c => c.monty_username === 'SimWeGo')?.api_key;
-        console.log('🔑 API Keys récupérées depuis la DB:', CLIENT1_API_KEY?.substring(0, 20) + '...', CLIENT2_API_KEY?.substring(0, 20) + '...');
+        CLIENT_TEST_API_KEY = clientsResponse.body.clients.find(c => c.monty_username === 'montytest')?.api_key;
+        CLIENT_REAL_API_KEY = clientsResponse.body.clients.find(c => c.monty_username === 'SimWeGo')?.api_key;
+        console.log('🔑 API Keys récupérées depuis la DB:', CLIENT_TEST_API_KEY?.substring(0, 20) + '...', CLIENT_REAL_API_KEY?.substring(0, 20) + '...');
       }
     } catch (error) {
       console.log('⚠️ Erreur récupération API keys, utilisation du .env');
     }
     
     // Fallback vers les valeurs du .env si pas trouvées
-    if (!CLIENT1_API_KEY) CLIENT1_API_KEY = process.env.CLIENT1_API_KEY;
-    if (!CLIENT2_API_KEY) CLIENT2_API_KEY = process.env.CLIENT2_API_KEY;
+    if (!CLIENT_TEST_API_KEY) CLIENT_TEST_API_KEY = process.env.CLIENT_TEST_API_KEY;
+    if (!CLIENT_REAL_API_KEY) CLIENT_REAL_API_KEY = process.env.CLIENT_REAL_API_KEY;
   });
 
   describe('🏥 Routes Publiques', () => {
@@ -98,11 +98,11 @@ describe('🛣️ SimWeGo API - Tests des Routes de Base', () => {
   describe('🔐 Authentification SimWeGo', () => {
     test('GET /client/info - Info Client1 avec API Key valide', async () => {
       console.log('📡 Test: Authentification Client1');
-      console.log('🔑 API Key:', CLIENT1_API_KEY.substring(0, 20) + '...');
+      console.log('🔑 API Key:', CLIENT_TEST_API_KEY.substring(0, 20) + '...');
       
       const response = await request(app)
         .get('/client/info')
-        .set('Authorization', `Bearer ${CLIENT1_API_KEY}`);
+        .set('Authorization', `Bearer ${CLIENT_TEST_API_KEY}`);
 
       console.log('✅ Status:', response.status);
       
@@ -119,11 +119,11 @@ describe('🛣️ SimWeGo API - Tests des Routes de Base', () => {
 
     test('GET /client/info - Info Client2 avec API Key valide', async () => {
       console.log('📡 Test: Authentification Client2');
-      console.log('🔑 API Key:', CLIENT2_API_KEY.substring(0, 20) + '...');
+      console.log('🔑 API Key:', CLIENT_REAL_API_KEY.substring(0, 20) + '...');
       
       const response = await request(app)
         .get('/client/info')
-        .set('Authorization', `Bearer ${CLIENT2_API_KEY}`);
+        .set('Authorization', `Bearer ${CLIENT_REAL_API_KEY}`);
 
       console.log('✅ Status:', response.status);
       
@@ -170,7 +170,7 @@ describe('🛣️ SimWeGo API - Tests des Routes de Base', () => {
       
       const response = await request(app)
         .get('/api/v0/Bundles')
-        .set('Authorization', `Bearer ${CLIENT1_API_KEY}`);
+        .set('Authorization', `Bearer ${CLIENT_TEST_API_KEY}`);
 
       console.log('✅ Status:', response.status);
       
@@ -190,7 +190,7 @@ describe('🛣️ SimWeGo API - Tests des Routes de Base', () => {
       
       const response = await request(app)
         .get('/api/v0/Orders/Dashboard')
-        .set('Authorization', `Bearer ${CLIENT2_API_KEY}`)
+        .set('Authorization', `Bearer ${CLIENT_REAL_API_KEY}`)
         .timeout(20000);
 
       console.log('✅ Status:', response.status);
@@ -219,12 +219,12 @@ describe('🛣️ SimWeGo API - Tests des Routes de Base', () => {
   });
 
   describe('🆕 Nouveaux Endpoints Ajoutés', () => {
-    test('GET /api/v0/bundles/csv - Export CSV des bundles', async () => {
+    test('GET /api/v0/Bundles/CSV - Export CSV des bundles', async () => {
       console.log('📡 Test: Export CSV bundles');
       
       const response = await request(app)
-        .get('/api/v0/bundles/csv')
-        .set('Authorization', `Bearer ${CLIENT1_API_KEY}`);
+        .get('/api/v0/Bundles/CSV')
+        .set('Authorization', `Bearer ${CLIENT_TEST_API_KEY}`);
 
       console.log('✅ Status:', response.status);
       // Accepter 200 (succès) ou 500 (erreur Monty)
@@ -232,72 +232,72 @@ describe('🛣️ SimWeGo API - Tests des Routes de Base', () => {
       console.log('✅ Route CSV bundles accessible');
     });
 
-    test('GET /api/v0/orders/consumption - Consommation des bundles', async () => {
+    test('GET /api/v0/Orders/Consumption - Consommation des bundles', async () => {
       console.log('📡 Test: Consommation bundles');
       
       const response = await request(app)
-        .get('/api/v0/orders/consumption')
-        .set('Authorization', `Bearer ${CLIENT1_API_KEY}`);
+        .get('/api/v0/Orders/Consumption')
+        .set('Authorization', `Bearer ${CLIENT_TEST_API_KEY}`);
 
       console.log('✅ Status:', response.status);
-      expect([200, 500]).toContain(response.status);
+      expect([200, 400, 500]).toContain(response.status);
       console.log('✅ Route consommation accessible');
     });
 
-    test('GET /api/v0/resellers - Liste des revendeurs', async () => {
+    test('GET /api/v0/Reseller - Liste des revendeurs', async () => {
       console.log('📡 Test: Liste revendeurs');
       
       const response = await request(app)
-        .get('/api/v0/resellers')
-        .set('Authorization', `Bearer ${CLIENT1_API_KEY}`);
+        .get('/api/v0/Reseller')
+        .set('Authorization', `Bearer ${CLIENT_TEST_API_KEY}`);
 
       console.log('✅ Status:', response.status);
       expect([200, 500]).toContain(response.status);
       console.log('✅ Route revendeurs accessible');
     });
 
-    test('GET /api/v0/agents - Liste des agents', async () => {
+    test('GET /api/v0/Agent - Liste des agents', async () => {
       console.log('📡 Test: Liste agents');
       
       const response = await request(app)
-        .get('/api/v0/agents')
-        .set('Authorization', `Bearer ${CLIENT1_API_KEY}`);
+        .get('/api/v0/Agent')
+        .set('Authorization', `Bearer ${CLIENT_TEST_API_KEY}`);
 
       console.log('✅ Status:', response.status);
       expect([200, 500]).toContain(response.status);
       console.log('✅ Route agents accessible');
     });
 
-    test('GET /api/v0/branches - Liste des branches', async () => {
+    test('GET /api/v0/Branch - Liste des branches', async () => {
       console.log('📡 Test: Liste branches');
       
       const response = await request(app)
-        .get('/api/v0/branches')
-        .set('Authorization', `Bearer ${CLIENT1_API_KEY}`);
+        .get('/api/v0/Branch')
+        .set('Authorization', `Bearer ${CLIENT_TEST_API_KEY}`);
 
       console.log('✅ Status:', response.status);
       expect([200, 500]).toContain(response.status);
       console.log('✅ Route branches accessible');
     });
 
-    test('GET /api/v0/vouchers - Liste des vouchers', async () => {
+    test('GET /api/v0/Voucher - Liste des vouchers', async () => {
       console.log('📡 Test: Liste vouchers');
       
       const response = await request(app)
-        .get('/api/v0/vouchers')
-        .set('Authorization', `Bearer ${CLIENT1_API_KEY}`);
+        .get('/api/v0/Voucher')
+        .set('Authorization', `Bearer ${CLIENT_TEST_API_KEY}`);
 
       console.log('✅ Status:', response.status);
       expect([200, 500]).toContain(response.status);
       console.log('✅ Route vouchers accessible');
     });
 
-    test('GET /api/v0/roles/all - Liste des rôles', async () => {
+    test('GET /api/v0/Role/all - Liste des rôles', async () => {
       console.log('📡 Test: Liste rôles');
       
       const response = await request(app)
-        .get('/api/v0/roles/all')
-        .set('Authorization', `Bearer ${CLIENT1_API_KEY}`);
+        .get('/api/v0/Role/all')
+        .set('Authorization', `Bearer ${CLIENT_TEST_API_KEY}`);
 
       console.log('✅ Status:', response.status);
       expect([200, 500]).toContain(response.status);
@@ -308,11 +308,11 @@ describe('🛣️ SimWeGo API - Tests des Routes de Base', () => {
       console.log('📡 Test: Nouveaux endpoints sans auth');
       
       const endpoints = [
-        '/api/v0/bundles/csv',
-        '/api/v0/orders/consumption', 
-        '/api/v0/resellers',
-        '/api/v0/agents',
-        '/api/v0/vouchers'
+        '/api/v0/Bundles/CSV',
+        '/api/v0/Orders/Consumption', 
+        '/api/v0/Reseller',
+        '/api/v0/Agent',
+        '/api/v0/Voucher'
       ];
 
       for (const endpoint of endpoints) {

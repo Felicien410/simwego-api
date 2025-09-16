@@ -32,15 +32,15 @@ class ClientController {
           resellerId: 'test-reseller-id' // Mock value for now
         },
         api_endpoints: {
-          bundles: '/api/v0/bundles',
-          orders: '/api/v0/orders',
-          agents: '/api/v0/agents',
-          resellers: '/api/v0/resellers',
-          branches: '/api/v0/branches',
-          roles: '/api/v0/roles',
-          networks: '/api/v0/networks',
-          issues: '/api/v0/issues',
-          vouchers: '/api/v0/vouchers',
+          bundles: '/api/v0/Bundles',
+          orders: '/api/v0/Orders',
+          agents: '/api/v0/Agent',
+          resellers: '/api/v0/Reseller',
+          branches: '/api/v0/Branch',
+          roles: '/api/v0/Role',
+          networks: '/api/v0/NetworkList',
+          issues: '/api/v0/IssueReport',
+          vouchers: '/api/v0/Voucher',
           utilities: '/api/v0/utilities'
         }
       };

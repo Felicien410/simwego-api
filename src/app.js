@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
+const swaggerUi = require('swagger-ui-express');
 
 // Imports locaux
 const environment = require('./config/environment');
@@ -116,7 +117,10 @@ class SimWeGoAPI {
     // Routes d'administration avancées
     this.setupAdvancedAdminRoutes();
     
-    // PRINCIPAL: Routes API modulaires (82 endpoints organisés)
+    // Documentation Swagger UI (AVANT les routes API pour éviter les conflits)
+    this.setupSwaggerUI();
+    
+    // PRINCIPAL: Routes API modulaires (82 endpoints organisés) - APRÈS Swagger
     this.app.use('/api/v0', apiRoutes);
     
     // Gestion des erreurs et 404
@@ -166,6 +170,12 @@ class SimWeGoAPI {
             reserve: 'POST /api/v0/Bundles/Reserve',
             dashboard: 'GET /api/v0/Orders/Dashboard'
           }
+        },
+        
+        documentation: {
+          swaggerUI: '/api/ui/',
+          openAPIJson: '/api/swagger.json',
+          description: 'Complete API documentation with Swagger UI'
         },
         
         support: {
@@ -309,6 +319,23 @@ class SimWeGoAPI {
     });
   }
 
+  // Configuration de Swagger UI
+  setupSwaggerUI() {
+    try {
+      const swaggerDocument = require('../docs/swagger-final.json');
+      
+      // Simple Swagger UI setup
+      this.app.use('/api/v0/ui', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+        customSiteTitle: 'SimWeGo API Documentation'
+      }));
+
+      logger.info('Swagger UI configured at /api/v0/ui');
+
+    } catch (error) {
+      logger.error('Failed to setup Swagger UI:', error.message);
+    }
+  }
+
   // Gestion des erreurs avec détails d'architecture
   setupErrorHandling() {
     // Route 404 avec aide à la navigation
@@ -321,12 +348,14 @@ class SimWeGoAPI {
           public: [
             '/ (API documentation)',
             '/health (System health)',
-            '/test (Connectivity test)'
+            '/test (Connectivity test)',
+            '/api/ui/ (Swagger UI documentation)'
           ],
           authenticated: [
             '/client/info (Client information)', 
             '/client/diagnostics (Advanced diagnostics)',
-            '/api/v0/* (82 API endpoints)'
+            '/api/v0/* (82 API endpoints)',
+            '/api/swagger.json (OpenAPI specification)'
           ]
         },
         

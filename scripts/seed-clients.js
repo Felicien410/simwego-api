@@ -34,14 +34,14 @@ async function seedClients() {
     const clientsData = [
       {
         name: 'Client 1',
-        api_key: process.env.CLIENT1_API_KEY,
+        api_key: process.env.CLIENT_TEST_API_KEY,
         monty_username: process.env.CLIENT1_MONTY_USERNAME,
         monty_password: process.env.CLIENT1_MONTY_PASSWORD,
         active: true
       },
       {
         name: 'Client 2',
-        api_key: process.env.CLIENT2_API_KEY,
+        api_key: process.env.CLIENT_REAL_API_KEY,
         monty_username: process.env.CLIENT2_MONTY_USERNAME,
         monty_password: process.env.CLIENT2_MONTY_PASSWORD,
         active: true

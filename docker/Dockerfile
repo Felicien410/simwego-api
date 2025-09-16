@@ -33,6 +33,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY src/ ./src/
 COPY migrations/ ./migrations/
 COPY scripts/ ./scripts/
+COPY docs/ ./docs/
 COPY package*.json ./
 
 # Créer le dossier logs

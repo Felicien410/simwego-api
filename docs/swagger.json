@@ -1,0 +1,407 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "SimWeGo API - Multi-Client Proxy to Monty eSIM",
+    "description": "\nSimWeGo API is a multi-client proxy gateway to Monty eSIM services with enhanced authentication.\n\n## Authentication\n\nInstead of direct Monty authentication, SimWeGo uses a simplified API key authentication:\n\n- **Header**: `Authorization: Bearer YOUR_SIMWEGO_API_KEY`\n- The API automatically handles Monty authentication in the background\n- All endpoints require authentication except health checks\n\n## Key Differences from Monty API\n\n1. **Authentication**: Uses SimWeGo API keys instead of username/password\n2. **Login Flow**: Simplified - just use your API key in all requests\n3. **Multi-Client**: Each API key represents a different client/reseller\n4. **Automatic Token Management**: No need to handle Monty tokens manually\n\n## Base URL\n\nProduction: `https://api.simwego.com/api/v0`\nDevelopment: `http://localhost:3001/api/v0`\n        ",
+    "version": "1.0.0",
+    "contact": {
+      "name": "SimWeGo Support",
+      "email": "support@simwego.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.simwego.com/api/v0",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:3001/api/v0",
+      "description": "Development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "API_KEY",
+        "description": "Use your SimWeGo API key as Bearer token"
+      },
+      "AdminAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Admin JWT token for administrative operations"
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "System",
+      "description": "System health and information endpoints"
+    },
+    {
+      "name": "Authentication",
+      "description": "Authentication and token management"
+    },
+    {
+      "name": "Agent Management",
+      "description": "Agent operations and management"
+    },
+    {
+      "name": "Bundle Management",
+      "description": "eSIM bundle operations"
+    },
+    {
+      "name": "Order Management",
+      "description": "Order processing and history"
+    },
+    {
+      "name": "Reseller Management",
+      "description": "Reseller account management"
+    },
+    {
+      "name": "Branch Management",
+      "description": "Branch/location management"
+    },
+    {
+      "name": "Role Management",
+      "description": "Permissions and role management"
+    },
+    {
+      "name": "Network Management",
+      "description": "Mobile network configurations"
+    },
+    {
+      "name": "Issue Management",
+      "description": "Support and issue tracking"
+    },
+    {
+      "name": "Voucher Management",
+      "description": "Promotional codes and vouchers"
+    },
+    {
+      "name": "Utilities",
+      "description": "Utility functions and tools"
+    },
+    {
+      "name": "Admin",
+      "description": "Administrative functions (Admin access required)"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": ["System"],
+        "summary": "API Documentation and Information",
+        "description": "Get comprehensive API documentation and architecture information",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "API information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "description": { "type": "string" },
+                    "version": { "type": "string" },
+                    "architecture": { "type": "object" },
+                    "endpoints": { "type": "object" },
+                    "usage": { "type": "object" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": ["System"],
+        "summary": "Health Check",
+        "description": "Check API and backend service health",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Service healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "timestamp": { "type": "string" },
+                    "services": { "type": "object" },
+                    "stats": { "type": "object" }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unhealthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/test": {
+      "get": {
+        "tags": ["System"],
+        "summary": "Connectivity Test",
+        "description": "Test connectivity to Monty API backend",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Connectivity test results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "simwegoApi": { "type": "string" },
+                    "montyConnection": { "type": "string" },
+                    "responseTime": { "type": "string" },
+                    "timestamp": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Agent/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Login with Monty credentials (returns tokens)",
+        "description": "\n**Special endpoint for login flow**\n\nThis endpoint allows you to login with your Monty username/password to get access tokens.\n\n**Note**: For all other endpoints, just use your SimWeGo API key in the Authorization header.\n\nThis login is useful for:\n- Getting initial access tokens\n- Testing your Monty credentials\n- Manual token management (advanced users)\n                ",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["username", "password"],
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "Your Monty username",
+                    "example": "your_monty_username"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "Your Monty password",
+                    "example": "your_monty_password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "clientId": { "type": "string" },
+                        "username": { "type": "string" },
+                        "agentId": { "type": "string" },
+                        "resellerId": { "type": "string" }
+                      }
+                    },
+                    "tokens": {
+                      "type": "object",
+                      "properties": {
+                        "access_token": { "type": "string" },
+                        "refresh_token": { "type": "string" },
+                        "expires_in": { "type": "integer" },
+                        "token_type": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" },
+                    "message": { "type": "string" },
+                    "code": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Agent/logout": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Logout",
+        "description": "Logout and invalidate cached tokens",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Logout successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "timestamp": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/CheckToken": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Validate Token",
+        "description": "Validate a Monty access token",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["token"],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "Monty access token to validate"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token validation result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "valid": { "type": "boolean" },
+                    "timestamp": { "type": "string" },
+                    "client": { "type": "object" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/clients": {
+      "get": {
+        "tags": ["Admin"],
+        "summary": "List All Clients",
+        "description": "Get list of all SimWeGo clients (Admin only)",
+        "security": [{ "AdminAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "List of clients",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "clients": {
+                      "type": "array",
+                      "items": { "type": "object" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Admin"],
+        "summary": "Create New Client",
+        "description": "Create a new SimWeGo client (Admin only)",
+        "security": [{ "AdminAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "monty_username", "monty_password"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "monty_username": { "type": "string" },
+                  "monty_password": { "type": "string" },
+                  "active": { "type": "boolean", "default": true }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Client created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "client": { "type": "object" },
+                    "api_key": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
