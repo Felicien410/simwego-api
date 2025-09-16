@@ -110,4 +110,4 @@ SimWeGo API is a **multi-client proxy API** for Monty eSIM with a modular archit
 2. Use `npm run dev` for local development
 3. Database migrations via `npm run db:migrate`
 4. Use `make logs` to monitor application
-5. Admin interface development planned (see actions-plan-admin.md)
+5. Admin interface development completed (React dashboard available)
