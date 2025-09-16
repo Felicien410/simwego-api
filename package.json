@@ -14,7 +14,7 @@
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f simwego-api",
     "docker:reset": "docker-compose down -v && docker-compose up -d",
-    "test": "jest",
+    "test": "echo '\n🚀 SimWeGo API - Complete Test Suite\n===========================================' && jest --testSequencer=@jest/test-sequencer tests/ --verbose",
     "test:watch": "jest --watch",
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",

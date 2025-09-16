@@ -25,7 +25,7 @@ module.exports = {
   testTimeout: 10000,
   
   // Setup files
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
+  // setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
   
   // Variables d'environnement pour les tests
   testEnvironmentOptions: {

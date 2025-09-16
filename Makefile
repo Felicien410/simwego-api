@@ -1,22 +1,39 @@
 # Makefile SimWeGo API
-.PHONY: all re up down logs test
+.PHONY: all re up down logs test admin-dashboard list-clients migrate seed
 
 # Variables
 GREEN = \033[0;32m
 RED = \033[0;31m
 NC = \033[0m
 
-all: ## Lance l'application complète
+all: ## Lance l'application complète avec dashboard admin
 	@echo "$(GREEN)🚀 Démarrage SimWeGo API$(NC)"
-	docker-compose up -d --build
+	docker-compose --profile admin up -d --build
 	@echo "$(GREEN)✅ API disponible sur http://localhost:3001$(NC)"
+	@echo "$(GREEN)🔧 Dashboard Admin (Adminer) disponible sur http://localhost:8080$(NC)"
+	@echo "$(GREEN)📝 Credentials DB: simwego_user / simwego_password_2024$(NC)"
+	@echo "$(GREEN)🔄 Application des migrations...$(NC)"
+	make migrate
+	@echo "$(GREEN)🌱 Application des seeds...$(NC)"
+	make seed
+	@echo "$(GREEN)🚀 Démarrage Dashboard React...$(NC)"
+	cd admin-dashboard && npm run dev &
+	@echo "$(GREEN)⚛️  Dashboard React disponible sur http://localhost:3000$(NC)"
 
 re: ## Recrée tout (supprime volumes, containers, images et redémarre)
 	@echo "$(GREEN)🔄 Reset complet SimWeGo$(NC)"
-	docker-compose down -v --remove-orphans
+	docker-compose --profile admin down -v --remove-orphans
 	docker system prune -f
-	docker-compose up -d --build
+	docker-compose --profile admin up -d --build
 	@echo "$(GREEN)✅ Reset terminé - API disponible sur http://localhost:3001$(NC)"
+	@echo "$(GREEN)🔧 Dashboard Admin (Adminer) disponible sur http://localhost:8080$(NC)"
+	@echo "$(GREEN)🔄 Application des migrations...$(NC)"
+	make migrate
+	@echo "$(GREEN)🌱 Application des seeds...$(NC)"
+	make seed
+	@echo "$(GREEN)🚀 Démarrage Dashboard React...$(NC)"
+	cd admin-dashboard && npm run dev &
+	@echo "$(GREEN)⚛️  Dashboard React disponible sur http://localhost:3000$(NC)"
 
 migrate: ## Applique les migrations de la base de données
 	npm run db:migrate
@@ -24,17 +41,28 @@ migrate: ## Applique les migrations de la base de données
 seed: ## Applique les seeds de la base de données
 	npm run db:seed
 
-up: ## Démarre les services
-	docker-compose up -d
+up: ## Démarre les services avec dashboard admin
+	docker-compose --profile admin up -d
+	@echo "$(GREEN)✅ Services démarrés$(NC)"
+	@echo "$(GREEN)🔧 Dashboard Admin: http://localhost:8080$(NC)"
 
 down: ## Arrête les services
-	docker-compose down
+	docker-compose --profile admin down
 
 logs: ## Affiche les logs
 	docker-compose logs -f simwego-api
 
 test: ## Lance les tests
 	npm test
+
+admin-dashboard: ## Lance uniquement le dashboard admin
+	@echo "$(GREEN)🔧 Lancement du dashboard admin$(NC)"
+	docker-compose --profile admin up -d adminer
+	@echo "$(GREEN)✅ Dashboard Admin disponible sur http://localhost:8080$(NC)"
+	@echo "$(GREEN)📝 Serveur: postgres$(NC)"
+	@echo "$(GREEN)📝 Base: simwego$(NC)"
+	@echo "$(GREEN)📝 Utilisateur: simwego_user$(NC)"
+	@echo "$(GREEN)📝 Mot de passe: simwego_password_2024$(NC)"
 
 list-clients: ## Liste tous les clients avec toutes leurs infos
 	@echo "$(GREEN)📋 Liste complète des clients SimWeGo$(NC)"
