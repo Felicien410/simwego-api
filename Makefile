@@ -53,7 +53,8 @@ logs: ## Affiche les logs
 	docker-compose logs -f simwego-api
 
 test: ## Lance les tests
-	npm test
+	@echo "$(GREEN)🧪 Lancement des tests de sécurité$(NC)"
+	@export $$(grep -v '^#' .env | xargs) && npm test
 
 admin-dashboard: ## Lance uniquement le dashboard admin
 	@echo "$(GREEN)🔧 Lancement du dashboard admin$(NC)"
