@@ -137,7 +137,7 @@ class AdminClientController {
 
       const client = await models.Client.create(clientData);
       
-      // Générer l'API key définitive avec l'ID auto-généré
+      // Générer l'API key définitive avec l'UUID auto-généré
       const finalApiKey = encryptionService.generateApiKey(client.id);
       await client.update({ api_key: finalApiKey });
 

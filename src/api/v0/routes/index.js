@@ -4,6 +4,7 @@ const router = express.Router();
 
 // Import Passport middleware
 const { clientAuth, clientAuthWithMonty } = require('../../../middleware/passportAuth');
+const { sanitizeResponse, auditAccess } = require('../../../middleware/security');
 
 // Import route modules
 const authRoutes = require('./auth');
@@ -19,7 +20,12 @@ const vouchersRoutes = require('./vouchers');
 const utilitiesRoutes = require('./utilities');
 
 // Client info routes (requires API key authentication with Passport)
-router.get('/client/info', clientAuth, require('../controllers/clientController').getInfo);
+router.get('/client/info', 
+  clientAuth, 
+  sanitizeResponse,
+  auditAccess('client_info'),
+  require('../controllers/clientController').getInfo
+);
 
 // Health check endpoint that tests Monty connection
 router.get('/HealthCheck', clientAuthWithMonty, require('../controllers/utilsController').healthCheck);

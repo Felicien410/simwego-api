@@ -63,13 +63,15 @@ class EncryptionService {
 
   /**
    * Génère une clé API sécurisée
-   * @param {string} clientId - Identifiant du client
+   * @param {string} clientId - Identifiant UUID du client
    * @returns {string} Clé API sécurisée
    */
   generateApiKey(clientId) {
     const timestamp = Date.now().toString(36);
-    const random = crypto.randomBytes(8).toString('hex');
-    return `swg_${clientId}_${timestamp}_${random}`;
+    const random = crypto.randomBytes(16).toString('hex');
+    // Use a hash of the clientId to avoid exposing the UUID
+    const clientHash = crypto.createHash('sha256').update(clientId).digest('hex').substring(0, 8);
+    return `swg_${clientHash}_${timestamp}_${random}`;
   }
 }
 

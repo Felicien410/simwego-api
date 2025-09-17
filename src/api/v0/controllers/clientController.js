@@ -1,5 +1,6 @@
 // src/api/v0/controllers/clientController.js - Client information controller
 const { logger } = require('../../../config/database');
+const { sanitizeObject } = require('../../../middleware/security');
 
 class ClientController {
   async getInfo(req, res, next) {
@@ -18,11 +19,10 @@ class ClientController {
       // Return client information with expected structure (manual because Passport client is plain object)
       const response = {
         client: {
-          id: client.id,
+          // Generate opaque client identifier for external use
+          client_ref: `client_${Buffer.from(client.id).toString('base64').replace(/[+=\/]/g, '').substring(0, 12)}`,
           name: client.name,
-          api_key: client.api_key,
           active: client.active,
-          monty_username: client.monty_username,
           created_at: client.created_at,
           updated_at: client.updated_at
         },
@@ -45,12 +45,15 @@ class ClientController {
         }
       };
 
+      // Sanitize response to remove any remaining sensitive data
+      const sanitizedResponse = sanitizeObject(response);
+
       logger.info('Client info retrieved', {
         clientId: client.id,
         ip: req.ip
       });
 
-      res.json(response);
+      res.json(sanitizedResponse);
 
     } catch (error) {
       logger.error('Client info error', {
