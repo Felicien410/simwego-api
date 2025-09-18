@@ -54,8 +54,8 @@ describe('Admin & Authentication System Tests', () => {
       const clientData = {
         id: `test_client_${timestamp}`,
         name: `Test Client ${timestamp}`,
-        monty_username: 'montytest',
-        monty_password: 'Gx7!mV9@pL2#qR5^'
+        monty_username: process.env.CLIENT1_MONTY_USERNAME,
+        monty_password: process.env.CLIENT1_MONTY_PASSWORD
       };
 
       try {

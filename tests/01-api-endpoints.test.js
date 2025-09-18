@@ -4,7 +4,7 @@ require('dotenv').config();
 // Test configuration from environment
 const BASE_URL = 'http://localhost:3001';
 const CLIENT_TEST_API_KEY = process.env.CLIENT_TEST_API_KEY;
-const CLIENT_REAL_API_KEY = process.env.CLIENT_REAL_API_KEY;
+// const CLIENT_TEST_API_KEY = process.env.CLIENT_TEST_API_KEY; // Remplacé par CLIENT_TEST_API_KEY
 const TEST_ADMIN_TOKEN = process.env.TEST_ADMIN_TOKEN;
 
 // Function to get client configuration from database
@@ -20,6 +20,9 @@ async function getClientConfig(apiKey) {
     if (!client) {
       throw new Error(`Client not found for API key: ${apiKey}`);
     }
+    
+    // Debug: log client data (can remove this later)
+    // console.log('DEBUG - Client data:', { id: client.id, name: client.name, token_status: client.reseller_id ? 'has_token' : 'no_token' });
     
     return {
       reseller_id: client.reseller_id,
@@ -45,7 +48,10 @@ describe('SimWeGo API Tests', () => {
   beforeAll(async () => {
     console.log('Setting up test configurations...');
     testClientConfig = await getClientConfig(CLIENT_TEST_API_KEY);
-    realClientConfig = await getClientConfig(CLIENT_REAL_API_KEY);
+    realClientConfig = await getClientConfig(process.env.CLIENT_REAL_API_KEY);
+    
+    // testClientConfig uses CLIENT1, realClientConfig uses CLIENT2
+    
     console.log('Test client config:', testClientConfig);
     console.log('Real client config:', realClientConfig);
   });
@@ -56,7 +62,7 @@ describe('SimWeGo API Tests', () => {
       const response = await axios.get(`${BASE_URL}/api/v0/HealthCheck`, {
         headers: {
           'accept': 'application/json',
-          'Authorization': `Bearer ${CLIENT_REAL_API_KEY}`
+          'Authorization': `Bearer ${CLIENT_TEST_API_KEY}`
         }
       });
       expect(response.status).toBe(200);
@@ -69,7 +75,7 @@ describe('SimWeGo API Tests', () => {
       const response = await axios.get(`${BASE_URL}/api/v0/Reseller?currency_code=EUR`, {
         headers: {
           'accept': 'application/json',
-          'Authorization': `Bearer ${CLIENT_REAL_API_KEY}`
+          'Authorization': `Bearer ${CLIENT_TEST_API_KEY}`
         }
       });
       expect(response.status).toBe(200);
@@ -127,7 +133,7 @@ describe('SimWeGo API Tests', () => {
         await axios.post(`${BASE_URL}/api/v0/Reseller?currency_code=EUR`, payload, {
           headers: {
             'accept': 'application/json',
-            'Authorization': `Bearer ${CLIENT_REAL_API_KEY}`,
+            'Authorization': `Bearer ${CLIENT_TEST_API_KEY}`,
             'Content-Type': 'application/json'
           }
         });
@@ -141,7 +147,7 @@ describe('SimWeGo API Tests', () => {
       const response = await axios.get(`${BASE_URL}/api/v0/Reseller/${realClientConfig.reseller_id}?currency_code=SAR`, {
         headers: {
           'accept': 'application/json',
-          'Authorization': `Bearer ${CLIENT_REAL_API_KEY}`
+          'Authorization': `Bearer ${process.env.CLIENT_REAL_API_KEY}`
         }
       });
       expect(response.status).toBe(200);
@@ -156,7 +162,7 @@ describe('SimWeGo API Tests', () => {
         await axios.put(`${BASE_URL}/api/v0/Reseller/${realClientConfig.reseller_id}`, payload, {
           headers: {
             'accept': 'application/json',
-            'Authorization': `Bearer ${CLIENT_REAL_API_KEY}`,
+            'Authorization': `Bearer ${process.env.CLIENT_REAL_API_KEY}`,
             'Content-Type': 'application/json'
           }
         });
@@ -191,10 +197,10 @@ describe('SimWeGo API Tests', () => {
       };
 
       try {
-        const response = await axios.post(`${BASE_URL}/api/v0/Branch?reseller_id=${realClientConfig.reseller_id}`, payload, {
+        const response = await axios.post(`${BASE_URL}/api/v0/Branch?reseller_id=${testClientConfig.reseller_id}`, payload, {
           headers: {
             'accept': 'application/json',
-            'Authorization': `Bearer ${CLIENT_REAL_API_KEY}`,
+            'Authorization': `Bearer ${CLIENT_TEST_API_KEY}`,
             'Content-Type': 'application/json'
           }
         });
@@ -219,10 +225,10 @@ describe('SimWeGo API Tests', () => {
         throw new Error('Branch must be created first');
       }
 
-      const response = await axios.get(`${BASE_URL}/api/v0/Agent?reseller_id=${realClientConfig.reseller_id}&branch_id=${createdBranchId}`, {
+      const response = await axios.get(`${BASE_URL}/api/v0/Agent?reseller_id=${testClientConfig.reseller_id}&branch_id=${createdBranchId}`, {
         headers: {
           'accept': 'application/json',
-          'Authorization': `Bearer ${CLIENT_REAL_API_KEY}`
+          'Authorization': `Bearer ${CLIENT_TEST_API_KEY}`
         }
       });
 
@@ -255,10 +261,10 @@ describe('SimWeGo API Tests', () => {
       };
 
       try {
-        await axios.post(`${BASE_URL}/api/v0/Agent?reseller_id=${realClientConfig.reseller_id}&branch_id=${createdBranchId}`, payload, {
+        await axios.post(`${BASE_URL}/api/v0/Agent?reseller_id=${testClientConfig.reseller_id}&branch_id=${createdBranchId}`, payload, {
           headers: {
             'accept': 'application/json',
-            'Authorization': `Bearer ${CLIENT_REAL_API_KEY}`,
+            'Authorization': `Bearer ${CLIENT_TEST_API_KEY}`,
             'Content-Type': 'application/json'
           }
         });
@@ -273,30 +279,30 @@ describe('SimWeGo API Tests', () => {
         throw new Error('Branch and Agent must be created first');
       }
 
-      const response = await axios.get(`${BASE_URL}/api/v0/Agent/${createdAgentId}?reseller_id=${realClientConfig.reseller_id}&branch_id=${createdBranchId}`, {
+      const response = await axios.get(`${BASE_URL}/api/v0/Agent/${createdAgentId}?reseller_id=${testClientConfig.reseller_id}&branch_id=${createdBranchId}`, {
         headers: {
           'accept': 'application/json',
-          'Authorization': `Bearer ${CLIENT_REAL_API_KEY}`
+          'Authorization': `Bearer ${CLIENT_TEST_API_KEY}`
         }
       });
 
       expect(response.status).toBe(200);
     });
 
-    test('Delete real client branch after agent tests', async () => {
+    test('Delete test client branch after agent tests', async () => {
       if (createdBranchId) {
         try {
-          await axios.delete(`${BASE_URL}/api/v0/Branch/${createdBranchId}?reseller_id=${realClientConfig.reseller_id}`, {
+          await axios.delete(`${BASE_URL}/api/v0/Branch/${createdBranchId}?reseller_id=${testClientConfig.reseller_id}`, {
             headers: {
               'accept': 'application/json',
-              'Authorization': `Bearer ${CLIENT_REAL_API_KEY}`
+              'Authorization': `Bearer ${CLIENT_TEST_API_KEY}`
             }
           });
-          console.log(`Real client branch ${createdBranchId} deleted after agent tests`);
+          console.log(`Test client branch ${createdBranchId} deleted after agent tests`);
           createdBranchId = null;
           createdAgentId = null;
         } catch (error) {
-          console.log(`Failed to delete real client branch ${createdBranchId}:`, error.response?.status || error.message);
+          console.log(`Failed to delete test client branch ${createdBranchId}:`, error.response?.status || error.message);
         }
       }
     });
@@ -414,6 +420,122 @@ describe('SimWeGo API Tests', () => {
       });
 
       expect(response.status).toBe(200);
+    });
+
+    test('POST /api/v0/Bundles should assign bundle to customer', async () => {
+      if (!testBundleCode || !testBranchId) {
+        console.log('Skipping bundle assignment test - no bundle code or branch available');
+        return;
+      }
+
+      const timestamp = Date.now();
+      const customerEmail = `customer${timestamp}@example.com`;
+      const orderRef = `ORDER_${timestamp}`;
+
+      const payload = {
+        "bundle_code": testBundleCode,
+        "email": customerEmail,
+        "name": "Test Customer",
+        "order_reference": orderRef,
+        "whatsapp_number": "+1234567890"
+      };
+
+      try {
+        const response = await axios.post(`${BASE_URL}/api/v0/Bundles?reseller_id=${testClientConfig.reseller_id}&branch_id=${testBranchId}&currency_code=EUR`, payload, {
+          headers: {
+            'accept': 'application/json',
+            'Authorization': `Bearer ${CLIENT_TEST_API_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        expect(response.status).toBe(200);
+        expect(response.data).toHaveProperty('message', 'Bundle Assigned Successfully');
+        expect(response.data).toHaveProperty('order_id');
+        expect(response.data).toHaveProperty('iccid');
+        expect(response.data).toHaveProperty('remaining_wallet_balance');
+        expect(response.data).toHaveProperty('reseller_id');
+
+        // Store order_id for subsequent tests
+        global.testOrderId = response.data.order_id;
+        global.testOrderRef = orderRef;
+
+      } catch (error) {
+        if (error.response?.status === 400 && error.response?.data?.detail?.includes('balance')) {
+          console.log('Bundle assignment failed due to insufficient balance - this is expected');
+          expect(error.response.status).toBe(400);
+        } else {
+          console.error('Bundle assignment error:', error.response?.data || error.message);
+          throw error;
+        }
+      }
+    });
+
+    test('GET /api/v0/Orders should return order history', async () => {
+      if (!testBranchId) {
+        console.log('Skipping order history test - no branch available');
+        return;
+      }
+
+      const response = await axios.get(`${BASE_URL}/api/v0/Orders?reseller_id=${testClientConfig.reseller_id}&branch_id=${testBranchId}&page_size=10&currency_code=EUR`, {
+        headers: {
+          'accept': 'application/json',
+          'Authorization': `Bearer ${CLIENT_TEST_API_KEY}`
+        }
+      });
+
+      expect(response.status).toBe(200);
+      expect(response.data).toHaveProperty('developer_message', 'Success');
+      expect(response.data).toHaveProperty('orders');
+      expect(response.data).toHaveProperty('response_code', '0200');
+      expect(response.data).toHaveProperty('title', 'Success');
+      expect(response.data).toHaveProperty('total_orders_count');
+      expect(Array.isArray(response.data.orders)).toBe(true);
+    });
+
+    test('GET /api/v0/Orders/Consumption should return consumption data', async () => {
+      if (!global.testOrderId) {
+        console.log('Skipping consumption test - no order ID available');
+        return;
+      }
+
+      try {
+        const response = await axios.get(`${BASE_URL}/api/v0/Orders/Consumption?order_id=${global.testOrderId}&reseller_id=${testClientConfig.reseller_id}`, {
+          headers: {
+            'accept': 'application/json',
+            'Authorization': `Bearer ${CLIENT_TEST_API_KEY}`
+          }
+        });
+
+        expect(response.status).toBe(200);
+        expect(response.data).toHaveProperty('data_allocated');
+        expect(response.data).toHaveProperty('data_used');
+        expect(response.data).toHaveProperty('data_remaining');
+        expect(response.data).toHaveProperty('data_unit');
+        expect(response.data).toHaveProperty('plan_status');
+        expect(response.data).toHaveProperty('iccid');
+        expect(response.data).toHaveProperty('status');
+        expect(response.data).toHaveProperty('bundle_expiry_date');
+        expect(response.data).toHaveProperty('profile_expiry_date');
+        expect(response.data).toHaveProperty('profile_status');
+        expect(response.data).toHaveProperty('minutes_allocated');
+        expect(response.data).toHaveProperty('minutes_remaining');
+        expect(response.data).toHaveProperty('minutes_used');
+        expect(response.data).toHaveProperty('sms_allocated');
+        expect(response.data).toHaveProperty('sms_remaining');
+        expect(response.data).toHaveProperty('sms_used');
+        expect(response.data).toHaveProperty('supports_calls_sms');
+        expect(response.data).toHaveProperty('unlimited');
+
+      } catch (error) {
+        if (error.response?.status === 204) {
+          console.log('Consumption data not found - order may not be activated yet');
+          expect(error.response.status).toBe(204);
+        } else {
+          console.error('Consumption check error:', error.response?.data || error.message);
+          throw error;
+        }
+      }
     });
 
     test('Delete test client branch after bundle tests', async () => {

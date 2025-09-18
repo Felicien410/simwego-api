@@ -3,7 +3,7 @@ module.exports = {
   
   // Force sequential execution and proper ordering
   maxWorkers: 1,
-  testSequencer: './test-sequencer.js',
+  testSequencer: './tests/test-sequencer.js',
   
   // Dossiers de test
   testMatch: [
