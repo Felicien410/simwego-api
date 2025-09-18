@@ -9,6 +9,29 @@ async function startProduction() {
   console.log('🚀 Starting SimWeGo API in production mode...');
   
   try {
+    // Debug: Afficher les variables d'environnement critiques
+    console.log('🔍 Environment variables check:');
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('PORT:', process.env.PORT);
+    console.log('DATABASE_URL present:', !!process.env.DATABASE_URL);
+    console.log('DB_PASSWORD present:', !!process.env.DB_PASSWORD);
+    console.log('DB_ENCRYPTION_KEY present:', !!process.env.DB_ENCRYPTION_KEY);
+    
+    // Test de connexion DB basique
+    console.log('🔌 Testing database connection...');
+    try {
+      const { Sequelize } = require('sequelize');
+      const sequelize = new Sequelize(process.env.DATABASE_URL, {
+        logging: console.log,
+        dialectOptions: { ssl: { require: true, rejectUnauthorized: false } }
+      });
+      await sequelize.authenticate();
+      console.log('✅ Database connection successful');
+      await sequelize.close();
+    } catch (dbError) {
+      console.log('❌ Database connection failed:', dbError.message);
+    }
+    
     // Attendre que la base soit prête
     console.log('⏳ Waiting for database...');
     await new Promise(resolve => setTimeout(resolve, 10000));
@@ -20,7 +43,10 @@ async function startProduction() {
       console.log('✅ Migrations completed:', stdout);
       if (stderr) console.log('Migration warnings:', stderr);
     } catch (migrationError) {
-      console.log('⚠️ Migration skipped (likely already applied):', migrationError.message);
+      console.log('❌ Migration failed with details:');
+      console.log('Error message:', migrationError.message);
+      console.log('Stdout:', migrationError.stdout);
+      console.log('Stderr:', migrationError.stderr);
     }
     
     // Seeder les clients si nécessaire
@@ -29,7 +55,10 @@ async function startProduction() {
       const { stdout: seedStdout } = await execAsync('node scripts/seed-clients.js');
       console.log('✅ Seeding completed:', seedStdout);
     } catch (seedError) {
-      console.log('⚠️ Seeding skipped (likely already done):', seedError.message);
+      console.log('❌ Seeding failed with details:');
+      console.log('Error message:', seedError.message);
+      console.log('Stdout:', seedError.stdout);
+      console.log('Stderr:', seedError.stderr);
     }
     
     // Démarrer l'application
