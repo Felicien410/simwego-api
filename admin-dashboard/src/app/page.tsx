@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { AuthGuard } from '@/components/AuthGuard';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, RefreshCw, Users, Activity, Server } from 'lucide-react';
+import { Plus, RefreshCw, Users, Activity, Server, LogOut } from 'lucide-react';
 import { ClientTable } from '@/components/ClientTable';
 import { AddClientDialog } from '@/components/AddClientDialog';
 import { EditClientDialog } from '@/components/EditClientDialog';
@@ -16,6 +18,7 @@ import { useToast } from '@/hooks/useToast';
 import { api, Client } from '@/lib/api';
 
 export default function AdminDashboard() {
+  const { user, logout } = useAuth();
   const [clients, setClients] = useState<Client[]>([]);
   const [stats, setStats] = useState<Record<string, any> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -127,7 +130,8 @@ export default function AdminDashboard() {
   const expiredTokens = clients.filter(c => c.token_status === 'expired').length;
 
   return (
-    <div className="min-h-screen bg-background">
+    <AuthGuard>
+      <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -146,7 +150,10 @@ export default function AdminDashboard() {
                 <p className="text-sm text-muted-foreground">Gestion des clients et intégration Monty eSIM</p>
               </div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex items-center gap-3">
+              <div className="text-sm text-muted-foreground">
+                Connecté en tant que <span className="font-medium">{user?.username}</span>
+              </div>
               <ThemeToggle />
               <Button 
                 variant="outline" 
@@ -156,6 +163,14 @@ export default function AdminDashboard() {
               >
                 <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
                 Actualiser
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={logout}
+                className="hover:bg-destructive/10 hover:text-destructive"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Déconnexion
               </Button>
             </div>
           </div>
@@ -280,6 +295,7 @@ export default function AdminDashboard() {
         onDelete={handleDeleteClient}
         onTest={handleTestConnection}
       />
-    </div>
+      </div>
+    </AuthGuard>
   );
 }

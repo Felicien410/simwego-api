@@ -1,0 +1,23 @@
+name: simwego-admin-dashboard
+region: fra
+services:
+- name: dashboard
+  source_dir: /
+  github:
+    repo: Felicien410/simwego-api
+    branch: production
+  run_command: npm start
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  routes:
+  - path: /
+  health_check:
+    http_path: /
+  envs:
+  - key: NODE_ENV
+    value: production
+  - key: PORT
+    value: "3000"
+  - key: NEXT_PUBLIC_API_URL
+    value: "https://simwego-w8jpu.ondigitalocean.app"

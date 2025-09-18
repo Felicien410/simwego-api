@@ -1,7 +1,6 @@
 // lib/api.ts - API client for SimWeGo Admin Dashboard
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-const ADMIN_TOKEN = process.env.NEXT_PUBLIC_ADMIN_TOKEN || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFkbWluX3Rlc3QiLCJ1c2VybmFtZSI6InRlc3RfYWRtaW4iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTc5Mzg3NzYsImV4cCI6MTc4OTQ3NDc3Nn0.EfA-iJ7pMCkjWLjHS4ZpwfjmOQka0JG2b6gmypcwPM4';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://simwego-w8jpu.ondigitalocean.app';
 
 interface Client {
   id: number;
@@ -50,18 +49,24 @@ interface MontyTestResponse {
 
 class SimWeGoAPI {
   private baseURL: string;
-  private token: string;
 
-  constructor(baseURL: string = API_BASE_URL, token: string = ADMIN_TOKEN) {
+  constructor(baseURL: string = API_BASE_URL) {
     this.baseURL = baseURL;
-    this.token = token;
+  }
+
+  private getToken(): string {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('adminToken') || '';
+    }
+    return '';
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
+    const token = this.getToken();
     const headers = {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${this.token}`,
+      'Authorization': `Bearer ${token}`,
       ...options.headers,
     };
 
