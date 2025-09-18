@@ -63,7 +63,20 @@ async function startProduction() {
     
     // Démarrer l'application
     console.log('🚀 Starting application...');
-    require('../src/app.js');
+    try {
+      console.log('📦 Loading app module...');
+      const SimWeGoAPI = require('../src/app.js');
+      console.log('🏗️ Creating app instance...');
+      const api = new SimWeGoAPI();
+      console.log('🚀 Starting server...');
+      await api.start();
+      console.log('✅ Application started successfully!');
+    } catch (appError) {
+      console.error('❌ Application startup failed:');
+      console.error('Error message:', appError.message);
+      console.error('Stack trace:', appError.stack);
+      process.exit(1);
+    }
     
   } catch (error) {
     console.error('❌ Production startup failed:', error);
