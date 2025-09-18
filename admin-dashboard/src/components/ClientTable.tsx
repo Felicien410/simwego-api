@@ -89,8 +89,8 @@ export function ClientTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID</TableHead>
               <TableHead>Nom</TableHead>
+              <TableHead>ID</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Monty User</TableHead>
               <TableHead>Token Status</TableHead>
@@ -125,8 +125,8 @@ export function ClientTable({
           </TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[60px]">ID</TableHead>
               <TableHead>Nom</TableHead>
+              <TableHead className="w-[60px]">ID</TableHead>
               <TableHead className="w-[100px]">Status</TableHead>
               <TableHead>Monty User</TableHead>
               <TableHead className="w-[120px]">Token Status</TableHead>
@@ -144,8 +144,8 @@ export function ClientTable({
             ) : (
               clients.map((client) => (
                 <TableRow key={client.id} className="hover:bg-muted/30 transition-colors duration-200">
-                  <TableCell className="font-medium">#{client.id}</TableCell>
                   <TableCell className="font-medium">{client.name}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">#{client.id}</TableCell>
                   <TableCell>
                     <Badge variant={client.active ? "default" : "secondary"}>
                       {client.active ? "Actif" : "Inactif"}

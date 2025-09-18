@@ -53,7 +53,7 @@ export function ClientDetailsSheet({
     
     switch (status) {
       case 'valid':
-        return <Badge variant="default" className="bg-green-500">Token Valide</Badge>;
+        return <Badge variant="outline">Token Valide</Badge>;
       case 'expired':
         return <Badge variant="destructive">Token Expiré</Badge>;
       default:
@@ -65,15 +65,15 @@ export function ClientDetailsSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[400px] sm:w-[540px]">
+      <SheetContent className="w-[400px] sm:w-[600px] max-h-[100vh] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Client #{client.id} - {client.name}</SheetTitle>
+          <SheetTitle>{client.name}</SheetTitle>
           <SheetDescription>
             Détails complets du client et de ses informations Monty
           </SheetDescription>
         </SheetHeader>
 
-        <div className="mt-6 space-y-6">
+        <div className="mt-4 space-y-4 max-w-md">
           {/* Status Card */}
           <Card>
             <CardHeader>

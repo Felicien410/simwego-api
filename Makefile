@@ -17,23 +17,18 @@ all: ## Lance l'application complète avec dashboard admin
 	@echo "$(GREEN)🌱 Application des seeds...$(NC)"
 	make seed
 	@echo "$(GREEN)🚀 Démarrage Dashboard React...$(NC)"
-	cd admin-dashboard && npm run dev &
-	@echo "$(GREEN)⚛️  Dashboard React disponible sur http://localhost:3000$(NC)"
+	@if ! lsof -i :3002 > /dev/null 2>&1; then \
+		cd admin-dashboard && npm run dev & \
+		echo "$(GREEN)⚛️  Dashboard React disponible sur http://localhost:3002$(NC)"; \
+	else \
+		echo "$(GREEN)⚛️  Dashboard React déjà en cours sur http://localhost:3002$(NC)"; \
+	fi
 
 re: ## Recrée tout (supprime volumes, containers, images et redémarre)
 	@echo "$(GREEN)🔄 Reset complet SimWeGo$(NC)"
 	docker-compose --profile admin down -v --remove-orphans
 	docker system prune -f
-	docker-compose --profile admin up -d --build
-	@echo "$(GREEN)✅ Reset terminé - API disponible sur http://localhost:3001$(NC)"
-	@echo "$(GREEN)🔧 Dashboard Admin (Adminer) disponible sur http://localhost:8080$(NC)"
-	@echo "$(GREEN)🔄 Application des migrations...$(NC)"
-	make migrate
-	@echo "$(GREEN)🌱 Application des seeds...$(NC)"
-	make seed
-	@echo "$(GREEN)🚀 Démarrage Dashboard React...$(NC)"
-	cd admin-dashboard && npm run dev &
-	@echo "$(GREEN)⚛️  Dashboard React disponible sur http://localhost:3000$(NC)"
+	make all
 
 migrate: ## Applique les migrations de la base de données
 	npm run db:migrate
@@ -50,7 +45,7 @@ down: ## Arrête les services
 	docker-compose --profile admin down
 
 logs: ## Affiche les logs
-	docker-compose logs -f simwego-api
+	docker-compose logs -f api
 
 test: ## Lance les tests
 	@echo "$(GREEN)🧪 Lancement des tests de sécurité$(NC)"

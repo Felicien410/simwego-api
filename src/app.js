@@ -5,6 +5,9 @@ const helmet = require('helmet');
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 
+// Sentry monitoring - must be imported first
+const Sentry = require("@sentry/node");
+
 // Security middleware - standard libraries
 const rateLimit = require('express-rate-limit');
 const slowDown = require('express-slow-down');
@@ -26,6 +29,35 @@ class SimWeGoAPI {
     this.app = express();
     this.sequelize = null;
     this.models = {};
+    
+    // Initialize Sentry monitoring if DSN is configured
+    this.initializeSentry();
+  }
+
+  // Initialize Sentry monitoring
+  initializeSentry() {
+    if (environment.sentry.dsn) {
+      Sentry.init({
+        dsn: environment.sentry.dsn,
+        environment: environment.sentry.environment,
+        sendDefaultPii: true, // Send IP addresses and user data
+        integrations: [
+          Sentry.httpIntegration(),
+          Sentry.expressIntegration({ app: this.app }),
+        ],
+        tracesSampleRate: environment.sentry.tracesSampleRate,
+      });
+
+      // Setup Sentry middleware - no additional setup needed
+      // Error handler will be added in setupErrorHandling()
+
+      logger.info('Sentry monitoring initialized', {
+        environment: environment.sentry.environment,
+        tracesSampleRate: environment.sentry.tracesSampleRate
+      });
+    } else {
+      logger.info('Sentry DSN not configured - monitoring disabled');
+    }
   }
 
   // Initialisation de la base de données et des modèles
@@ -411,10 +443,37 @@ class SimWeGoAPI {
       });
     });
 
+    // Sentry error handler (must be before other error handlers)
+    if (environment.sentry.dsn) {
+      this.app.use((req, res, next) => {
+        res.locals.sentryRequestId = res.sentry;
+        next();
+      });
+    }
+
     // Gestionnaire d'erreur global avec contexte d'architecture
     this.app.use((error, req, res, next) => {
       const errorId = Date.now().toString(36) + Math.random().toString(36).substr(2);
       
+      // Capture error with Sentry if configured
+      let sentryId = 'monitoring-disabled';
+      if (environment.sentry.dsn) {
+        Sentry.withScope((scope) => {
+          scope.setTag('errorId', errorId);
+          scope.setUser({
+            id: req.client?.id || 'unknown',
+            username: req.client?.name || 'anonymous'
+          });
+          scope.setContext('request', {
+            url: req.originalUrl,
+            method: req.method,
+            ip: req.ip
+          });
+          sentryId = Sentry.captureException(error);
+        });
+      }
+      
+      // Log error with Sentry context if available
       logger.error('Unhandled application error:', {
         errorId,
         error: error.message,
@@ -423,7 +482,8 @@ class SimWeGoAPI {
         method: req.method,
         ip: req.ip,
         client: req.client?.id || 'unknown',
-        architecture: 'modular'
+        architecture: 'modular',
+        sentryId
       });
       
       if (!res.headersSent) {
@@ -436,7 +496,8 @@ class SimWeGoAPI {
           architecture: 'Modular API with 10 controllers',
           support: {
             logs: 'Check server logs for error ID: ' + errorId,
-            contact: 'support@simwego.com'
+            contact: 'support@simwego.com',
+            sentryId: sentryId
           },
           timestamp: new Date().toISOString()
         });

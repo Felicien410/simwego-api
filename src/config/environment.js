@@ -48,6 +48,13 @@ const environment = {
     level: process.env.LOG_LEVEL || 'info',
     maxFiles: parseInt(process.env.LOG_MAX_FILES) || 5,
     maxSize: process.env.LOG_MAX_SIZE || '10MB'
+  },
+
+  // Configuration Sentry
+  sentry: {
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+    tracesSampleRate: parseFloat(process.env.SENTRY_TRACES_SAMPLE_RATE) || 0.1
   }
 };
 
