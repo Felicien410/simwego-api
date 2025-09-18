@@ -4,7 +4,8 @@
   "description": "SimWeGo Multi-Client Proxy API for Monty eSIM with PostgreSQL",
   "main": "src/app.js",
   "scripts": {
-    "start": "node src/app.js",
+    "start": "node scripts/start-production.js",
+    "start:simple": "node src/app.js",
     "dev": "nodemon src/app.js",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:seed": "node scripts/seed-clients.js",
