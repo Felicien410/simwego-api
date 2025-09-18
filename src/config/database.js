@@ -111,13 +111,30 @@ const config = {
 const env = process.env.NODE_ENV || 'development';
 const dbConfig = config[env];
 
-// Initialiser Sequelize
-const sequelize = new Sequelize(
-  dbConfig.database,
-  dbConfig.username,
-  dbConfig.password,
-  dbConfig
-);
+// Initialiser Sequelize - utiliser DATABASE_URL en production
+const sequelize = process.env.NODE_ENV === 'production' && process.env.DATABASE_URL
+  ? new Sequelize(process.env.DATABASE_URL, {
+      dialect: 'postgres',
+      logging: false,
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false
+        }
+      },
+      pool: {
+        max: 10,
+        min: 2,
+        acquire: 30000,
+        idle: 10000
+      }
+    })
+  : new Sequelize(
+      dbConfig.database,
+      dbConfig.username,
+      dbConfig.password,
+      dbConfig
+    );
 
 // Fonction de connexion avec retry
 async function connectWithRetry(retries = 5, delay = 5000) {
