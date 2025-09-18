@@ -5,6 +5,11 @@ const helmet = require('helmet');
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 
+// Security middleware - standard libraries
+const rateLimit = require('express-rate-limit');
+const slowDown = require('express-slow-down');
+const hpp = require('hpp');
+
 // Imports locaux
 const environment = require('./config/environment');
 const { initializeDatabase, closeDatabase, logger } = require('./config/database');
@@ -55,6 +60,29 @@ class SimWeGoAPI {
 
   // Configuration des middlewares globaux
   setupMiddleware() {
+    // Rate limiting global (skip in test environment)
+    if (!environment.isTest()) {
+      const limiter = rateLimit({
+        windowMs: environment.security.rateLimitWindow,
+        max: environment.security.rateLimitMax,
+        message: { error: 'Too many requests', retryAfter: Math.ceil(environment.security.rateLimitWindow / 1000) },
+        standardHeaders: true,
+        legacyHeaders: false,
+      });
+      this.app.use(limiter);
+
+      // Slow down repeated requests
+      const speedLimiter = slowDown({
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        delayAfter: 100, // allow 100 requests per 15 minutes, then...
+        delayMs: () => 500 // Fixed for v2 compatibility
+      });
+      this.app.use(speedLimiter);
+    }
+
+    // HTTP Parameter Pollution attacks
+    this.app.use(hpp());
+
     // Sécurité
     this.app.use(helmet({
       contentSecurityPolicy: false,

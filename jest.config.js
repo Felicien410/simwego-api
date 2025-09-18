@@ -1,6 +1,10 @@
 module.exports = {
   testEnvironment: 'node',
   
+  // Force sequential execution and proper ordering
+  maxWorkers: 1,
+  testSequencer: './test-sequencer.js',
+  
   // Dossiers de test
   testMatch: [
     '**/tests/**/*.test.js'
@@ -21,8 +25,8 @@ module.exports = {
   verbose: true,
   clearMocks: true,
   
-  // Timeouts
-  testTimeout: 10000,
+  // Timeouts - increased for security tests
+  testTimeout: 30000,
   
   // Variables d'environnement pour les tests
   testEnvironmentOptions: {

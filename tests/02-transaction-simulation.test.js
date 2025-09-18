@@ -62,7 +62,7 @@ describe('Transaction Simulation Tests', () => {
     
     // Create a test branch for transactions
     const timestamp = Date.now();
-    const branchName = `Trans ${Math.random().toString(36).replace(/[0-9]/g, '').substring(2,8)}`;
+    const branchName = `Trans ${Math.random().toString(36).replace(/[0-9]/g, '').substring(2,8).toUpperCase()}`;
     const branchPayload = {
       "agent": {
         "email": `trans${timestamp}@example.com`,

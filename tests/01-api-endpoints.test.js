@@ -171,7 +171,7 @@ describe('SimWeGo API Tests', () => {
   describe('Branch and Agent Tests', () => {
     test('POST /api/v0/Branch should create branch and return 200', async () => {
       const timestamp = Date.now();
-      const branchName = `Real ${Math.random().toString(36).replace(/[0-9]/g, '').substring(2,8)}`;
+      const branchName = `Real ${Math.random().toString(36).replace(/[0-9]/g, '').substring(2,8).toUpperCase()}`;
       const payload = {
         "agent": {
           "email": `test${timestamp}@hotmail.com`,
@@ -306,7 +306,7 @@ describe('SimWeGo API Tests', () => {
   describe('Bundle Tests', () => {
     test('Create test branch for bundle tests', async () => {
       const timestamp = Date.now();
-      const branchName = `Bundle ${Math.random().toString(36).replace(/[0-9]/g, '').substring(2,8)}`;
+      const branchName = `Bundle ${Math.random().toString(36).replace(/[0-9]/g, '').substring(2,8).toUpperCase()}`;
       const payload = {
         "agent": {
           "email": `testtest${timestamp}@hotmail.com`,
