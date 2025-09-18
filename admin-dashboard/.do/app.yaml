@@ -1,15 +1,18 @@
-name: simwego-admin-dashboard
+name: simwego-admin
 region: fra
 services:
 - name: dashboard
   source_dir: /
   github:
-    repo: Felicien410/simwego-api
-    branch: production
+    repo: felicien410/simwego-admin
+    branch: main
+    deploy_on_push: true
   run_command: npm start
+  build_command: npm run build
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
+  http_port: 3000
   routes:
   - path: /
   health_check:
