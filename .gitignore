@@ -137,8 +137,6 @@ test-output/
 ecosystem.config.js
 .pm2/
 
-# Sequelize CLI
-.sequelizerc
 
 # Local development files
 fix-test-data.js

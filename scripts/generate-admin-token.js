@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-// scripts/generate-admin-token.js - Generate admin JWT token
+// scripts/generate-admin-token.js - Generate admin JWT token and password hash
 
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 function generateAdminToken() {
   const secret = process.env.ADMIN_JWT_SECRET || process.env.JWT_SECRET;

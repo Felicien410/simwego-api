@@ -15,8 +15,12 @@ const {
 // Import controllers
 const statsController = require('../controllers/statsController');
 const clientController = require('../controllers/clientController');
+const authController = require('../controllers/authController');
 
-// All admin routes require JWT authentication
+// Public authentication routes (no JWT required)
+router.post('/login', authController.loginLimiter, authController.validateLogin, authController.login);
+
+// All other admin routes require JWT authentication
 router.use(adminAuth);
 
 // Global strict input validation for ALL admin routes
