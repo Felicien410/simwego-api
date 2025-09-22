@@ -87,6 +87,12 @@ const config = {
     }),
     dialect: 'postgres',
     logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
     pool: {
       max: 20,
       min: 5,
