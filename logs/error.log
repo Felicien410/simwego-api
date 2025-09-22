@@ -130,3 +130,7 @@
 {"clientId":"unknown","input":"' or 1=1#","ip":"192.168.65.1","level":"error","message":"DANGEROUS INPUT DETECTED AND BLOCKED","path":"body.name","service":"simwego-api","timestamp":"2025-09-18T15:43:14.334Z","userAgent":"axios/1.12.0"}
 {"clientId":"unknown","input":"' UNION ALL SELECT @@version --","ip":"192.168.65.1","level":"error","message":"DANGEROUS INPUT DETECTED AND BLOCKED","path":"body.name","service":"simwego-api","timestamp":"2025-09-18T15:43:14.338Z","userAgent":"axios/1.12.0"}
 {"client":"Client 1","endpoint":"/Reseller/679b9a7051c57357f5c8248a","error":"timeout of 30000ms exceeded","level":"error","message":"Proxy error","retryCount":0,"service":"simwego-api","timestamp":"2025-09-18T15:44:05.993Z"}
+{"level":"error","message":"❌ Database connection attempt 1/5 failed:","service":"simwego-api","timestamp":"2025-09-22T14:47:40.833Z"}
+{"level":"error","message":"❌ Database connection attempt 2/5 failed:","service":"simwego-api","timestamp":"2025-09-22T14:47:46.055Z"}
+{"level":"error","message":"❌ Database connection attempt 3/5 failed:","service":"simwego-api","timestamp":"2025-09-22T14:47:51.279Z"}
+{"level":"error","message":"❌ Database connection attempt 4/5 failed:","service":"simwego-api","timestamp":"2025-09-22T14:47:56.499Z"}

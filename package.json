@@ -7,6 +7,7 @@
     "start": "node scripts/start-production.js",
     "start:simple": "node src/app.js",
     "dev": "nodemon src/app.js",
+    "migrate": "node scripts/migrate.js",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:seed": "node scripts/seed-clients.js",
     "db:reset": "npx sequelize-cli db:migrate:undo:all && npm run db:migrate && npm run db:seed",

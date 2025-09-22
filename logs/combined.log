@@ -2221,3 +2221,15 @@
 {"error":"getaddrinfo ENOTFOUND resellerapi.montyesim.com","level":"warn","message":"Monty API health check failed","service":"simwego-api","timestamp":"2025-09-18T17:15:48.381Z"}
 {"client":null,"clientId":null,"contentLength":"637","duration":"33ms","ip":"127.0.0.1","level":"info","message":"Request processed","method":"GET","service":"simwego-api","status":200,"timestamp":"2025-09-18T17:15:48.382Z","url":"/health","userAgent":"curl/8.12.1"}
 {"level":"info","message":"🛑 Received SIGTERM, closing database connection...","service":"simwego-api","timestamp":"2025-09-18T17:15:50.951Z"}
+{"level":"error","message":"❌ Database connection attempt 1/5 failed:","service":"simwego-api","timestamp":"2025-09-22T14:47:40.833Z"}
+{"level":"info","message":"⏳ Retrying in 5 seconds...","service":"simwego-api","timestamp":"2025-09-22T14:47:40.835Z"}
+{"level":"error","message":"❌ Database connection attempt 2/5 failed:","service":"simwego-api","timestamp":"2025-09-22T14:47:46.055Z"}
+{"level":"info","message":"⏳ Retrying in 5 seconds...","service":"simwego-api","timestamp":"2025-09-22T14:47:46.056Z"}
+{"level":"error","message":"❌ Database connection attempt 3/5 failed:","service":"simwego-api","timestamp":"2025-09-22T14:47:51.279Z"}
+{"level":"info","message":"⏳ Retrying in 5 seconds...","service":"simwego-api","timestamp":"2025-09-22T14:47:51.280Z"}
+{"level":"error","message":"❌ Database connection attempt 4/5 failed:","service":"simwego-api","timestamp":"2025-09-22T14:47:56.499Z"}
+{"level":"info","message":"⏳ Retrying in 5 seconds...","service":"simwego-api","timestamp":"2025-09-22T14:47:56.499Z"}
+{"environment":"development","level":"info","message":"Sentry monitoring initialized","service":"simwego-api","timestamp":"2025-09-22T14:48:07.402Z","tracesSampleRate":0.1}
+{"endpoints":["GET /admin/clients","POST /admin/clients","GET /admin/clients/:id","PUT /admin/clients/:id","DELETE /admin/clients/:id","POST /admin/clients/:id/test","GET /admin/stats"],"level":"info","message":"Advanced admin routes configured","prefix":"/admin","service":"simwego-api","timestamp":"2025-09-22T14:48:07.618Z"}
+{"level":"info","message":"Swagger UI configured at /api/v0/ui","service":"simwego-api","timestamp":"2025-09-22T14:48:07.625Z"}
+{"architecture":"modular","controllers":10,"database":"PostgreSQL","endpoints":82,"environment":"development","level":"info","message":"SimWeGo API started successfully","montyTarget":"https://resellerapi.montyesim.com","port":3001,"service":"simwego-api","timestamp":"2025-09-22T14:48:07.629Z"}
