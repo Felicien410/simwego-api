@@ -90,8 +90,7 @@ const config = {
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: true,
-        ca: process.env.DB_CA_CERT || undefined
+        rejectUnauthorized: true
       }
     },
     pool: {
@@ -110,10 +109,10 @@ const dbConfig = config[env];
 // Configuration SSL sécurisée pour production
 const getSSLConfig = () => {
   if (process.env.NODE_ENV === 'production') {
+    // Digital Ocean utilise des certificats standards avec sslmode=require
     return {
       require: true,
-      rejectUnauthorized: true,
-      ca: process.env.DB_CA_CERT || undefined
+      rejectUnauthorized: true
     };
   }
   return false;
