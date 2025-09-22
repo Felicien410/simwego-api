@@ -2,11 +2,11 @@
   "openapi": "3.0.0",
   "info": {
     "title": "SimWeGo API - Complete eSIM Management Platform",
-    "description": "\nSimWeGo API provides comprehensive eSIM management services.\n\n## Authentication\n\nAll endpoints require your SimWeGo API key:\n- **Header**: `Authorization: Bearer YOUR_SIMWEGO_API_KEY`\n- Contact support@simwego.com to obtain your API key\n\n## Features\n\nComplete eSIM management platform with 85+ endpoints covering:\n- Bundle and package management\n- Order processing and tracking  \n- Agent and user management\n- Network configurations\n- Issue reporting and support\n",
+    "description": "\nSimWeGo API provides comprehensive eSIM management services.\n\n## Authentication\n\nAll endpoints require your SimWeGo API key:\n- **Header**: `Authorization: Bearer YOUR_SIMWEGO_API_KEY`\n- Contact supportpro@simwego.com to obtain your API key\n\n## Features\n\nComplete eSIM management platform with 85+ endpoints covering:\n- Bundle and package management\n- Order processing and tracking  \n- Agent and user management\n- Network configurations\n- Issue reporting and support\n",
     "version": "1.0.0",
     "contact": {
       "name": "SimWeGo Support",
-      "email": "support@simwego.com"
+      "email": "supportpro@simwego.com"
     }
   },
   "servers": [

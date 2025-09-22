@@ -499,7 +499,7 @@ class SimWeGoAPI {
           architecture: 'Modular API with 10 controllers',
           support: {
             logs: 'Check server logs for error ID: ' + errorId,
-            contact: 'support@simwego.com',
+            contact: 'supportpro@simwego.com',
             sentryId: sentryId
           },
           timestamp: new Date().toISOString()
