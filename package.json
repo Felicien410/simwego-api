@@ -1,7 +1,7 @@
 {
   "name": "simwego-api",
   "version": "1.0.0",
-  "description": "SimWeGo Multi-Client Proxy API for Monty eSIM with PostgreSQL",
+  "description": "SimWeGo Multi-Client Proxy API",
   "main": "src/app.js",
   "scripts": {
     "start": "node scripts/start-production.js",
