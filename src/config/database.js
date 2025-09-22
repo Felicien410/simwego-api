@@ -39,10 +39,11 @@ const config = {
     dialect: 'postgres',
     logging: (sql) => logger.info(sql),
     pool: {
-      max: 5,
-      min: 0,
+      max: 8,
+      min: 1,
       acquire: 30000,
-      idle: 10000
+      idle: 10000,
+      evict: 1000
     },
     retry: {
       match: [
@@ -76,34 +77,29 @@ const config = {
   },
   production: {
     ...(process.env.DATABASE_URL ? {
-      url: process.env.DATABASE_URL,
-      dialectOptions: {
-        ssl: {
-          require: true,
-          rejectUnauthorized: false
-        }
-      }
+      url: process.env.DATABASE_URL
     } : {
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       host: process.env.DB_HOST,
-      port: process.env.DB_PORT || 5432,
-      ssl: process.env.DB_SSL === 'true',
-      dialectOptions: process.env.DB_SSL === 'true' ? {
-        ssl: {
-          require: true,
-          rejectUnauthorized: false
-        }
-      } : {}
+      port: process.env.DB_PORT || 5432
     }),
     dialect: 'postgres',
     logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: true,
+        ca: process.env.DB_CA_CERT || undefined
+      }
+    },
     pool: {
-      max: 10,
-      min: 2,
+      max: 20,
+      min: 5,
       acquire: 30000,
-      idle: 10000
+      idle: 10000,
+      evict: 1000
     }
   }
 };
@@ -111,22 +107,32 @@ const config = {
 const env = process.env.NODE_ENV || 'development';
 const dbConfig = config[env];
 
+// Configuration SSL sécurisée pour production
+const getSSLConfig = () => {
+  if (process.env.NODE_ENV === 'production') {
+    return {
+      require: true,
+      rejectUnauthorized: true,
+      ca: process.env.DB_CA_CERT || undefined
+    };
+  }
+  return false;
+};
+
 // Initialiser Sequelize - utiliser DATABASE_URL en production
 const sequelize = process.env.NODE_ENV === 'production' && process.env.DATABASE_URL
   ? new Sequelize(process.env.DATABASE_URL, {
       dialect: 'postgres',
       logging: false,
       dialectOptions: {
-        ssl: {
-          require: true,
-          rejectUnauthorized: false
-        }
+        ssl: getSSLConfig()
       },
       pool: {
-        max: 10,
-        min: 2,
+        max: 20,
+        min: 5,
         acquire: 30000,
-        idle: 10000
+        idle: 10000,
+        evict: 1000
       }
     })
   : new Sequelize(
@@ -203,5 +209,7 @@ module.exports = {
   initializeDatabase,
   closeDatabase,
   logger,
-  config
+  config,
+  // Export pour Sequelize CLI
+  ...config
 };

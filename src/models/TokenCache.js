@@ -129,17 +129,18 @@ function initTokenCache(sequelize) {
       },
       {
         fields: ['client_id', 'expires_at']
+      },
+      {
+        fields: ['client_id', 'agent_id']
+      },
+      {
+        fields: ['expires_at', 'agent_id']
+      },
+      {
+        fields: ['client_id', 'agent_id', 'expires_at']
       }
     ],
-    hooks: {
-      // Hook pour nettoyer automatiquement les tokens expirés lors de la création
-      afterCreate: async () => {
-        // Nettoyer les tokens expirés de façon asynchrone
-        setImmediate(() => {
-          TokenCache.cleanExpiredTokens().catch(console.error);
-        });
-      }
-    }
+    hooks: {}
   });
 
   return TokenCache;

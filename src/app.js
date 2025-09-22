@@ -19,6 +19,7 @@ const { initializeDatabase, closeDatabase, logger } = require('./config/database
 const { passport } = require('./config/passport');
 const { initClient } = require('./models/Client');
 const { initTokenCache } = require('./models/TokenCache');
+const { tokenCleanupScheduler } = require('./services/tokenCleanupScheduler');
 // Middleware d'authentification importé mais pas utilisé directement dans app.js
 
 // NOUVEAU: Import des routes modulaires au lieu du proxy générique
@@ -196,7 +197,7 @@ class SimWeGoAPI {
     this.app.get('/', (req, res) => {
       res.json({
         name: 'SimWeGo API',
-        description: 'Multi-client proxy to Monty eSIM API with modular architecture',
+        description: 'Comprehensive API for eSIM management with modular architecture',
         version: '1.0.0',
         environment: environment.NODE_ENV,
         database: 'PostgreSQL',
@@ -206,7 +207,7 @@ class SimWeGoAPI {
           controllers: 10,
           routeFiles: 10,
           totalEndpoints: 82,
-          pattern: 'Controller → Service → Monty eSIM'
+          pattern: 'Express → Auth' 
         },
         
         endpoints: {
@@ -547,6 +548,9 @@ class SimWeGoAPI {
         console.log(`   GET /api/v0/Bundles`);
         console.log(`   GET /api/v0/Orders/Dashboard`);
         console.log(`   GET /api/v0/stats/endpoints\n`);
+        
+        // Démarrer le nettoyage programmé des tokens
+        tokenCleanupScheduler.start();
       });
 
       // Gestion propre de l'arrêt
@@ -555,6 +559,7 @@ class SimWeGoAPI {
         
         server.close(async () => {
           logger.info('HTTP server closed');
+          tokenCleanupScheduler.stop();
           await closeDatabase();
           logger.info('Database connections closed');
           process.exit(0);
