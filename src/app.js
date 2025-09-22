@@ -63,7 +63,13 @@ class SimWeGoAPI {
   // Initialisation de la base de données et des modèles
   async initializeDatabase() {
     try {
-      this.sequelize = await initializeDatabase();
+      // Utiliser l'instance sequelize déjà configurée au lieu de initializeDatabase()
+      const { sequelize } = require('./config/database');
+      this.sequelize = sequelize;
+      
+      // Test de connexion
+      await this.sequelize.authenticate();
+      logger.info('Database connection established successfully');
       
       // Initialiser les modèles
       this.models.Client = initClient(this.sequelize);
