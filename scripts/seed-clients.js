@@ -1,5 +1,11 @@
 // scripts/seed-clients.js - Script pour initialiser les données clients
 require('dotenv').config();
+
+// Force SSL pour Digital Ocean en production
+if (process.env.NODE_ENV === 'production') {
+  process.env.PGSSLMODE = 'no-verify';
+}
+
 const { initializeDatabase } = require('../src/config/database');
 const { initClient } = require('../src/models/Client');
 const { initTokenCache } = require('../src/models/TokenCache');
