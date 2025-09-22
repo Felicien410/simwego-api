@@ -178,45 +178,7 @@ passport.use('admin-jwt', new JwtStrategy({
   }
 }));
 
-/**
- * Sérialisation/Désérialisation pour les sessions (si nécessaire)
- * Principalement utilisé pour les sessions web
- */
-passport.serializeUser((user, done) => {
-  if (user.id) {
-    // Client
-    done(null, { type: 'client', id: user.id });
-  } else if (user.clientId) {
-    // User via Monty
-    done(null, { type: 'user', clientId: user.clientId, username: user.username });
-  } else {
-    // Admin
-    done(null, { type: 'admin', id: user.id });
-  }
-});
-
-passport.deserializeUser(async (serialized, done) => {
-  try {
-    if (serialized.type === 'client') {
-      const { Client } = getModels();
-      const client = await Client.findByPk(serialized.id);
-      done(null, client);
-    } else if (serialized.type === 'user') {
-      const userInfo = {
-        clientId: serialized.clientId,
-        username: serialized.username
-      };
-      done(null, userInfo);
-    } else if (serialized.type === 'admin') {
-      const admin = { id: serialized.id, role: 'admin' };
-      done(null, admin);
-    } else {
-      done(new Error('Unknown user type'));
-    }
-  } catch (error) {
-    done(error);
-  }
-});
+// Note: Session serialization removed - API is stateless with JWT tokens only
 
 /**
  * Middleware pour obtenir automatiquement un token Monty valide
@@ -267,7 +229,6 @@ module.exports = {
   
   // Utility functions
   requireAuth: (strategy = 'simwego-apikey') => passport.authenticate(strategy, { session: false }),
-  requireAuthWithSession: (strategy = 'simwego-apikey') => passport.authenticate(strategy, { session: true }),
   
   // Pre-configured middleware combinations
   authenticateClient: [

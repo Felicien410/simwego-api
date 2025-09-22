@@ -40,8 +40,9 @@ class TokenCache extends Model {
       }
     });
     
+    // Log cleanup to application logger instead of console
     if (deletedCount > 0) {
-      console.log(`Cleaned ${deletedCount} expired tokens from cache`);
+      require('../config/database').logger.info(`Cleaned ${deletedCount} expired tokens from cache`);
     }
     
     return deletedCount;
