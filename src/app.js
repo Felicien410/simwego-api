@@ -93,7 +93,7 @@ class SimWeGoAPI {
   // Configuration des middlewares globaux
   setupMiddleware() {
     // Trust proxy for Digital Ocean deployment
-    this.app.set('trust proxy', true);
+    this.app.set('trust proxy', 1);
     
     // Rate limiting global (skip in test environment)
     if (!environment.isTest()) {
