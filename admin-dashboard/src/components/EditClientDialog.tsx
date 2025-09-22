@@ -155,7 +155,7 @@ export function EditClientDialog({ open, onOpenChange, onClientUpdated, client }
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="edit-monty_username">Nom d'utilisateur Monty *</Label>
+            <Label htmlFor="edit-monty_username">Nom d&apos;utilisateur Monty *</Label>
             <Input
               id="edit-monty_username"
               value={formData.monty_username || ''}

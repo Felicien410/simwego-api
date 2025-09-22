@@ -17,7 +17,7 @@ import { api, Client } from '@/lib/api';
 
 export default function AdminDashboard() {
   const [clients, setClients] = useState<Client[]>([]);
-  const [stats, setStats] = useState<Record<string, any> | null>(null);
+  const [stats, setStats] = useState<Record<string, unknown> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   
@@ -44,7 +44,7 @@ export default function AdminDashboard() {
   const loadStats = async () => {
     try {
       const statsData = await api.getStats();
-      setStats(statsData as Record<string, any>);
+      setStats(statsData as Record<string, unknown>);
     } catch (error) {
       console.error('Error loading stats:', error);
       toast.error('Erreur lors du chargement des statistiques');

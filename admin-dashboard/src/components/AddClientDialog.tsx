@@ -163,7 +163,7 @@ export function AddClientDialog({ open, onOpenChange, onClientCreated }: AddClie
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="monty_username">Nom d'utilisateur Monty *</Label>
+            <Label htmlFor="monty_username">Nom d&apos;utilisateur Monty *</Label>
             <Input
               id="monty_username"
               value={formData.monty_username}
