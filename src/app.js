@@ -19,7 +19,6 @@ const { initializeDatabase, closeDatabase, logger } = require('./config/database
 const { passport } = require('./config/passport');
 const { initClient } = require('./models/Client');
 const { initTokenCache } = require('./models/TokenCache');
-const { tokenCleanupScheduler } = require('./services/tokenCleanupScheduler');
 // Middleware d'authentification importé mais pas utilisé directement dans app.js
 
 // NOUVEAU: Import des routes modulaires au lieu du proxy générique
@@ -548,9 +547,6 @@ class SimWeGoAPI {
         console.log(`   GET /api/v0/Bundles`);
         console.log(`   GET /api/v0/Orders/Dashboard`);
         console.log(`   GET /api/v0/stats/endpoints\n`);
-        
-        // Démarrer le nettoyage programmé des tokens
-        tokenCleanupScheduler.start();
       });
 
       // Gestion propre de l'arrêt
@@ -559,7 +555,6 @@ class SimWeGoAPI {
         
         server.close(async () => {
           logger.info('HTTP server closed');
-          tokenCleanupScheduler.stop();
           await closeDatabase();
           logger.info('Database connections closed');
           process.exit(0);

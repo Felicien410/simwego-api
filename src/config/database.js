@@ -87,12 +87,6 @@ const config = {
     }),
     dialect: 'postgres',
     logging: false,
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false
-      }
-    },
     pool: {
       max: 20,
       min: 5,
@@ -106,35 +100,12 @@ const config = {
 const env = process.env.NODE_ENV || 'development';
 const dbConfig = config[env];
 
-// Configuration SSL sécurisée pour production
-const getSSLConfig = () => {
-  if (process.env.NODE_ENV === 'production') {
-    // Digital Ocean utilise des certificats standards avec sslmode=require
-    return {
-      require: true,
-      rejectUnauthorized: false
-    };
-  }
-  return false;
-};
-
-// Debug DATABASE_URL en production
-if (process.env.NODE_ENV === 'production') {
-  console.log('DATABASE_URL present:', !!process.env.DATABASE_URL);
-  console.log('DATABASE_URL length:', process.env.DATABASE_URL?.length || 0);
-  if (process.env.DATABASE_URL) {
-    console.log('DATABASE_URL starts with:', process.env.DATABASE_URL.substring(0, 30) + '...');
-  }
-}
 
 // Initialiser Sequelize - utiliser DATABASE_URL en production
 const sequelize = process.env.NODE_ENV === 'production' && process.env.DATABASE_URL
   ? new Sequelize(process.env.DATABASE_URL, {
       dialect: 'postgres',
       logging: false,
-      dialectOptions: {
-        ssl: getSSLConfig()
-      },
       pool: {
         max: 20,
         min: 5,
