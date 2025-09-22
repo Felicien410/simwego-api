@@ -211,13 +211,13 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
-module.exports = {
-  sequelize,
-  connectWithRetry,
-  initializeDatabase,
-  closeDatabase,
-  logger,
-  config,
-  // Export pour Sequelize CLI
-  ...config
-};
+// Export pour Sequelize CLI - must be first
+module.exports = config;
+
+// Export pour l'application
+module.exports.sequelize = sequelize;
+module.exports.connectWithRetry = connectWithRetry;
+module.exports.initializeDatabase = initializeDatabase;
+module.exports.closeDatabase = closeDatabase;
+module.exports.logger = logger;
+module.exports.config = config;
