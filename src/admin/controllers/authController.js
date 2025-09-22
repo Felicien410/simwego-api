@@ -21,8 +21,8 @@ const loginLimiter = rateLimit({
 
 // Production admin credentials (from env vars)
 const ADMIN_CREDENTIALS = {
-  username: process.env.ADMIN_USERNAME || 'admin',
-  password: process.env.ADMIN_PASSWORD // Plain password, will be hashed on-the-fly
+  username: process.env.ADMIN_USERNAME,
+  passwordHash: process.env.ADMIN_PASSWORD_HASH // Bcrypt hash for security
 };
 
 // Validation middleware
@@ -57,8 +57,8 @@ const login = async (req, res) => {
     const { username, password } = req.body;
 
     // Check if admin credentials are configured
-    if (!ADMIN_CREDENTIALS.password) {
-      logger.error('Admin password not configured', {
+    if (!ADMIN_CREDENTIALS.passwordHash) {
+      logger.error('Admin password hash not configured', {
         ip: req.ip,
         userAgent: req.get('User-Agent')
       });
@@ -68,9 +68,9 @@ const login = async (req, res) => {
       });
     }
 
-    // Validate credentials (simple comparison for production simplicity)
+    // Validate credentials with bcrypt comparison
     const isValidUsername = username === ADMIN_CREDENTIALS.username;
-    const isValidPassword = password === ADMIN_CREDENTIALS.password;
+    const isValidPassword = await bcrypt.compare(password, ADMIN_CREDENTIALS.passwordHash);
 
     if (!isValidUsername || !isValidPassword) {
       logger.warn('Admin login failed - invalid credentials', {
