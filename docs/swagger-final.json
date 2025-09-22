@@ -1,15 +1,19 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "SimWeGo API - Multi-Client Proxy to Monty eSIM",
-    "description": "\nSimWeGo API provides comprehensive eSIM management services.\n\n## Authentication\n\nAll endpoints require your SimWeGo API key:\n- **Header**: `Authorization: Bearer YOUR_SIMWEGO_API_KEY`\n- Contact support@simwego.com to obtain your API key\n\n## Features\n\nComplete eSIM management platform with 85+ endpoints covering:\n- Bundle and package management\n- Order processing and tracking  \n- Agent and user management\n- Network configurations\n- Issue reporting and support\n",
+    "title": "SimWeGo API - Complete eSIM Management Platform",
+    "description": "\nSimWeGo API provides comprehensive eSIM management services.\n\n## Authentication\n\nAll endpoints require your SimWeGo API key:\n- **Header**: `Authorization: Bearer YOUR_SIMWEGO_API_KEY`\n- Contact supportpro@simwego.com to obtain your API key\n\n## Features\n\nComplete eSIM management platform with 85+ endpoints covering:\n- Bundle and package management\n- Order processing and tracking  \n- Agent and user management\n- Network configurations\n- Issue reporting and support\n",
     "version": "1.0.0",
     "contact": {
       "name": "SimWeGo Support",
-      "email": "support@simwego.com"
+      "email": "supportpro@simwego.com"
     }
   },
   "servers": [
+    {
+      "url": "https://api.simwego.com",
+      "description": "Production API"
+    },
     {
       "url": "http://localhost:3001",
       "description": "Development server"
@@ -4661,7 +4665,7 @@
                   "type": "string"
                 },
                 "assignee": {
-                  "example": "Monty eSIM Support",
+                  "example": "SimWeGo Support",
                   "maxLength": 20,
                   "minLength": 1,
                   "pattern": "^[a-zA-Z ']+$",
@@ -5917,7 +5921,7 @@
               "order_status": "Successful",
               "plan_status": "plan_status",
               "plan_uid": "6380d4efa3fb4",
-              "promocode": "Monty2023",
+              "promocode": "SIMWEGO2024",
               "refund_reason": "User Did not have good coverage.",
               "remaining_wallet_balance": 1000,
               "reseller_id": "507f191e810c19729de860ea",
@@ -5953,7 +5957,7 @@
               "order_status": "Successful",
               "plan_status": "plan_status",
               "plan_uid": "6380d4efa3fb4",
-              "promocode": "Monty2023",
+              "promocode": "SIMWEGO2024",
               "refund_reason": "User Did not have good coverage.",
               "remaining_wallet_balance": 1000,
               "reseller_id": "507f191e810c19729de860ea",
@@ -6026,7 +6030,7 @@
           "order_status": "Successful",
           "plan_status": "plan_status",
           "plan_uid": "6380d4efa3fb4",
-          "promocode": "Monty2023",
+          "promocode": "SIMWEGO2024",
           "refund_reason": "User Did not have good coverage.",
           "remaining_wallet_balance": 1000,
           "reseller_id": "507f191e810c19729de860ea",
@@ -6152,7 +6156,7 @@
             "type": "string"
           },
           "promocode": {
-            "example": "Monty2023",
+            "example": "SIMWEGO2024",
             "type": "string"
           },
           "refund_reason": {
@@ -7873,7 +7877,7 @@
           "issues": [
             {
               "added_by": "507f191e810c19729de860ea",
-              "assignee": "Monty eSIM Support",
+              "assignee": "SimWeGo Support",
               "branch_id": "507f191e810c19729de860ea",
               "chat": [
                 {
@@ -7913,7 +7917,7 @@
             },
             {
               "added_by": "507f191e810c19729de860ea",
-              "assignee": "Monty eSIM Support",
+              "assignee": "SimWeGo Support",
               "branch_id": "507f191e810c19729de860ea",
               "chat": [
                 {
@@ -8068,7 +8072,7 @@
         "additionalProperties": false,
         "example": {
           "added_by": "507f191e810c19729de860ea",
-          "assignee": "Monty eSIM Support",
+          "assignee": "SimWeGo Support",
           "branch_id": "507f191e810c19729de860ea",
           "chat": [
             {
@@ -8116,7 +8120,7 @@
             "type": "string"
           },
           "assignee": {
-            "example": "Monty eSIM Support",
+            "example": "SimWeGo Support",
             "maxLength": 20,
             "minLength": 1,
             "pattern": "^[a-zA-Z ']+$",
@@ -10255,7 +10259,7 @@
         "additionalProperties": false,
         "example": {
           "developer_message": "Operation Succcessful",
-          "message": "Monty Admin Role Updated Successfully.",
+          "message": "SimWeGo Admin Role Updated Successfully.",
           "response_code": "1",
           "role_id": "507f191e810c19729de860ea",
           "title": "Success"
@@ -10266,7 +10270,7 @@
             "type": "string"
           },
           "message": {
-            "example": "Monty Admin Role Updated Successfully.",
+            "example": "SimWeGo Admin Role Updated Successfully.",
             "maxLength": 100,
             "minLength": 0,
             "pattern": "^[\\s\\S]+$",
@@ -10479,7 +10483,7 @@
   "paths": {
     "/api/v0/Affiliate": {
       "get": {
-        "description": "Can be called to view reseller Affiliate Program.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called to view reseller Affiliate Program.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_affiliate_program",
         "parameters": [
           {
@@ -10579,7 +10583,7 @@
     },
     "/api/v0/Agent": {
       "get": {
-        "description": "Gets all Agents , can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Gets all Agents , can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_agent",
         "parameters": [
           {
@@ -10721,7 +10725,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.agent_controller"
       },
       "post": {
-        "description": "Adds a Agent to branch, can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Adds a Agent to branch, can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "add_agent",
         "parameters": [
           {
@@ -10847,7 +10851,7 @@
     },
     "/api/v0/Agent/GetAgentByEmail": {
       "post": {
-        "description": "Gets a Agent by Email, can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Gets a Agent by Email, can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_agent_by_email",
         "requestBody": {
           "content": {
@@ -10939,7 +10943,7 @@
     },
     "/api/v0/Agent/forgot-password": {
       "post": {
-        "description": "Allows the user to reset password via email.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows the user to reset password via email.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "forgot_password",
         "requestBody": {
           "content": {
@@ -11055,13 +11059,13 @@
                   "username": {
                     "type": "string",
                     "description": "Your Monty username",
-                    "example": "your_monty_username"
+                    "example": "your_simwego_username"
                   },
                   "password": {
                     "type": "string",
                     "format": "password",
                     "description": "Your Monty password",
-                    "example": "your_monty_password"
+                    "example": "your_simwego_password"
                   }
                 }
               }
@@ -11184,7 +11188,7 @@
     },
     "/api/v0/Agent/reset-password": {
       "post": {
-        "description": "Allows the user to reset password.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows the user to reset password.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "reset_password",
         "requestBody": {
           "content": {
@@ -11277,7 +11281,7 @@
     "/api/v0/Agent/{AgentID}": {
       "delete": {
         "deprecated": true,
-        "description": "Allows PERSONNEL to delete Agent.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows PERSONNEL to delete Agent.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "delete_agent",
         "parameters": [
           {
@@ -11408,7 +11412,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.agent_controller"
       },
       "get": {
-        "description": "Gets a Agent by ID , can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Gets a Agent by ID , can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_agent_by_id",
         "parameters": [
           {
@@ -11539,7 +11543,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.agent_controller"
       },
       "put": {
-        "description": "Allows admins to edit an Agent\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows admins to edit an Agent\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "edit_agent",
         "parameters": [
           {
@@ -11681,7 +11685,7 @@
     },
     "/api/v0/AllNetworkList": {
       "get": {
-        "description": "Gets all Network lists , can be called by users.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Gets all Network lists , can be called by users.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_all_network_list",
         "parameters": [
           {
@@ -11803,7 +11807,7 @@
     },
     "/api/v0/AvailableCountries": {
       "get": {
-        "description": "Can be called by users to view all counties available\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called by users to view all counties available\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_countries",
         "parameters": [
           {
@@ -11925,7 +11929,7 @@
     },
     "/api/v0/AvailableCurrencies": {
       "get": {
-        "description": "Can be called by users to view all currencies available\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called by users to view all currencies available\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_currencies",
         "parameters": [
           {
@@ -12055,7 +12059,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.bundles_controller"
       },
       "post": {
-        "description": "Allows a Super admin to manage Currencies.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows a Super admin to manage Currencies.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "manage_currencies",
         "requestBody": {
           "content": {
@@ -12147,7 +12151,7 @@
     },
     "/api/v0/AvailableCurrenciesCSV": {
       "post": {
-        "description": "Allows a Super admin to manage Currencies.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows a Super admin to manage Currencies.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "manage_currencies_csv",
         "requestBody": {
           "content": {
@@ -12239,7 +12243,7 @@
     },
     "/api/v0/AvailableRegions": {
       "get": {
-        "description": "Can be called by users to view all regions available\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called by users to view all regions available\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_regions",
         "parameters": [
           {
@@ -12361,7 +12365,7 @@
     },
     "/api/v0/Branch": {
       "get": {
-        "description": "Gets all Branches , can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Gets all Branches , can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_branch",
         "parameters": [
           {
@@ -12497,7 +12501,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.branch_controller"
       },
       "post": {
-        "description": "Adds a Branch to platform, can be called by Reseller Admin.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Adds a Branch to platform, can be called by Reseller Admin.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "add_branch",
         "parameters": [
           {
@@ -12607,7 +12611,7 @@
     },
     "/api/v0/Branch/{BranchID}": {
       "delete": {
-        "description": "Allows PERSONNEL to delete Branch.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows PERSONNEL to delete Branch.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "delete_branch",
         "parameters": [
           {
@@ -12722,7 +12726,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.branch_controller"
       },
       "get": {
-        "description": "Gets a Branch by ID , can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Gets a Branch by ID , can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_branch_by_id",
         "parameters": [
           {
@@ -12837,7 +12841,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.branch_controller"
       },
       "put": {
-        "description": "Allows admins to edit Branch\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows admins to edit Branch\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "edit_branch",
         "parameters": [
           {
@@ -12963,7 +12967,7 @@
     },
     "/api/v0/Bundles": {
       "get": {
-        "description": "Can be called by users to view all bundles available\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called by users to view all bundles available\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_bundles_of_country",
         "parameters": [
           {
@@ -13211,7 +13215,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.bundles_controller"
       },
       "post": {
-        "description": "Checks if the reseller has balance, and if the bundle is available, and assigns it to a user.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Checks if the reseller has balance, and if the bundle is available, and assigns it to a user.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "assign_bundle",
         "parameters": [
           {
@@ -13335,7 +13339,7 @@
     },
     "/api/v0/Bundles/AvailableTopup": {
       "get": {
-        "description": "Allows the user to view all bundles that are available with the Esim Profile Installed.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows the user to view all bundles that are available with the Esim Profile Installed.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_available_topup_bundles",
         "parameters": [
           {
@@ -13554,7 +13558,7 @@
     },
     "/api/v0/Bundles/CSV": {
       "get": {
-        "description": "Can be called by users to view all bundles available\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called by users to view all bundles available\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_bundles_of_country_csv",
         "parameters": [
           {
@@ -13780,7 +13784,7 @@
     },
     "/api/v0/Bundles/Cancel": {
       "post": {
-        "description": "Allow to cancel an order.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allow to cancel an order.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "cancel_bundle",
         "parameters": [
           {
@@ -13890,7 +13894,7 @@
     },
     "/api/v0/Bundles/Complete": {
       "post": {
-        "description": "Complete transaction and send profile information\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Complete transaction and send profile information\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "complete_transaction",
         "parameters": [
           {
@@ -13984,7 +13988,7 @@
     },
     "/api/v0/Bundles/Networks": {
       "get": {
-        "description": "Gets the bundle network list , can be called by users.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Gets the bundle network list , can be called by users.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_bundle_network_list",
         "parameters": [
           {
@@ -14092,7 +14096,7 @@
     },
     "/api/v0/Bundles/Reserve": {
       "post": {
-        "description": "Checks if the reseller has balance, and if the bundle is available, and assigns it to a user.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Checks if the reseller has balance, and if the bundle is available, and assigns it to a user.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "reserve_bundle",
         "parameters": [
           {
@@ -14233,7 +14237,7 @@
     "/api/v0/Bundles/Topup": {
       "get": {
         "deprecated": true,
-        "description": "Allows the user to view all bundles that are compatible with the Esim Profile Installed.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows the user to view all bundles that are compatible with the Esim Profile Installed.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_compatible_topup_bundles",
         "parameters": [
           {
@@ -14438,7 +14442,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.bundles_controller"
       },
       "post": {
-        "description": "Checks if the reseller has balance, and if the bundle is available, topups the bundle of the user.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Checks if the reseller has balance, and if the bundle is available, topups the bundle of the user.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "topup_bundle",
         "parameters": [
           {
@@ -14561,7 +14565,7 @@
     },
     "/api/v0/Bundles/V2": {
       "get": {
-        "description": "Can be called by users to view all bundles available\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called by users to view all bundles available\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_bundles_of_country_v2",
         "parameters": [
           {
@@ -14821,7 +14825,7 @@
     },
     "/api/v0/HealthCheck": {
       "get": {
-        "description": "a simple api to test if server is up and running\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "a simple api to test if server is up and running\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "health_check",
         "responses": {
           "200": {
@@ -14906,7 +14910,7 @@
     },
     "/api/v0/IssueReport": {
       "get": {
-        "description": "Gets all Issues Reported , can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Gets all Issues Reported , can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_issue_report",
         "parameters": [
           {
@@ -15119,7 +15123,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.issue_report_controller"
       },
       "post": {
-        "description": "Submit a technical issue or pricing concern report.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Submit a technical issue or pricing concern report.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "add_issue_report",
         "parameters": [
           {
@@ -15229,7 +15233,7 @@
     },
     "/api/v0/IssueReport/{ReportID}": {
       "delete": {
-        "description": "Allows PERSONNEL to delete IssueReport.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows PERSONNEL to delete IssueReport.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "delete_issue_report",
         "parameters": [
           {
@@ -15339,7 +15343,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.issue_report_controller"
       },
       "put": {
-        "description": "Manage the issue report\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Manage the issue report\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "edit_issue_report",
         "parameters": [
           {
@@ -15460,7 +15464,7 @@
     },
     "/api/v0/IssueReport/{ReportID}/Feedback": {
       "put": {
-        "description": "Submit feedback on the satisfaction of issue resolution.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Submit feedback on the satisfaction of issue resolution.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "submit_feedback",
         "parameters": [
           {
@@ -15566,7 +15570,7 @@
     },
     "/api/v0/NetworkList": {
       "get": {
-        "description": "Gets all Network lists , can be called by users.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Gets all Network lists , can be called by users.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_network_list",
         "parameters": [
           {
@@ -15713,7 +15717,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.network_list_controller"
       },
       "post": {
-        "description": "Adds a NetworkList to branch, can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Adds a NetworkList to branch, can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "manage_network_list",
         "requestBody": {
           "content": {
@@ -15805,7 +15809,7 @@
     },
     "/api/v0/NetworkList/{network_id}": {
       "delete": {
-        "description": "Allows admin to delete a Network.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows admin to delete a Network.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "delete_network_list",
         "parameters": [
           {
@@ -15906,7 +15910,7 @@
     },
     "/api/v0/NetworkListByRegions": {
       "get": {
-        "description": "Gets all Network lists , can be called by users.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Gets all Network lists , can be called by users.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_network_list_by_regions",
         "parameters": [
           {
@@ -16065,7 +16069,7 @@
     },
     "/api/v0/NetworkListCSV": {
       "post": {
-        "description": "Allows a Super admin to manage Networks Via CSV File.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows a Super admin to manage Networks Via CSV File.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "manage_networks_csv",
         "requestBody": {
           "content": {
@@ -16157,7 +16161,7 @@
     },
     "/api/v0/Orders": {
       "get": {
-        "description": "Can be called to view reseller order history.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called to view reseller order history.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_order_history",
         "parameters": [
           {
@@ -16426,7 +16430,7 @@
     },
     "/api/v0/Orders/Consumption": {
       "get": {
-        "description": "Can be called to view user bundle consumption and status.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called to view user bundle consumption and status.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_bundle_consumption",
         "parameters": [
           {
@@ -16554,7 +16558,7 @@
     },
     "/api/v0/Orders/Dashboard": {
       "get": {
-        "description": "Can be called to view reseller bundles sold chard, top 5 bundles, and sales volume.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called to view reseller bundles sold chard, top 5 bundles, and sales volume.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_dashboard",
         "parameters": [
           {
@@ -16712,7 +16716,7 @@
     },
     "/api/v0/Orders/MyeSimConsumption": {
       "get": {
-        "description": "Can be called to view user bundle consumption and status.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called to view user bundle consumption and status.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_my_bundle_consumption",
         "parameters": [
           {
@@ -16835,7 +16839,7 @@
     },
     "/api/v0/Orders/PlanHistory": {
       "get": {
-        "description": "Can be called to view reseller order history.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called to view reseller order history.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_plan_history",
         "parameters": [
           {
@@ -17117,7 +17121,7 @@
     },
     "/api/v0/Orders/Refund": {
       "post": {
-        "description": "Allows SuperAdmin to Refund an order.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows SuperAdmin to Refund an order.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "refund_order",
         "parameters": [
           {
@@ -17227,7 +17231,7 @@
     },
     "/api/v0/Orders/ResendEmail": {
       "post": {
-        "description": "Allows User to Resend an order email to deliver invoice and qr code.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows User to Resend an order email to deliver invoice and qr code.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "resend_order_email",
         "parameters": [
           {
@@ -17337,7 +17341,7 @@
     },
     "/api/v0/Orders/SendConsumptionEmail": {
       "post": {
-        "description": "Allows User to Send Consumption Email to the user upon certain thresholds.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows User to Send Consumption Email to the user upon certain thresholds.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "send_consumption_email",
         "parameters": [
           {
@@ -17462,7 +17466,7 @@
     },
     "/api/v0/Promocode": {
       "get": {
-        "description": "Can be called to view reseller promocode order history.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called to view reseller promocode order history.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_promocode_history",
         "parameters": [
           {
@@ -17678,7 +17682,7 @@
     },
     "/api/v0/Promocode/Dashboard": {
       "get": {
-        "description": "Can be called to view reseller promocode bundles sold chart\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called to view reseller promocode bundles sold chart\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_promocode_dashboard",
         "parameters": [
           {
@@ -17843,7 +17847,7 @@
     },
     "/api/v0/Reseller": {
       "get": {
-        "description": "Gets all Resellers , can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Gets all Resellers , can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_reseller",
         "parameters": [
           {
@@ -18033,7 +18037,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.reseller_controller"
       },
       "post": {
-        "description": "Adds a Reseller to platform, can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Adds a Reseller to platform, can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "add_reseller",
         "parameters": [
           {
@@ -18141,7 +18145,7 @@
     },
     "/api/v0/Reseller/Admin/custom_corporate_price": {
       "post": {
-        "description": "Allows a reseller agent to customize bundle retail price.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows a reseller agent to customize bundle retail price.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "customize_corporate_price",
         "parameters": [
           {
@@ -18265,7 +18269,7 @@
     },
     "/api/v0/Reseller/Admin/custom_corporate_price_csv": {
       "post": {
-        "description": "Allows a reseller agent to customize bundle retail price by CSV files.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows a reseller agent to customize bundle retail price by CSV files.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "customize_corporate_price_csv",
         "parameters": [
           {
@@ -18375,7 +18379,7 @@
     },
     "/api/v0/Reseller/AvailableResellerProperties": {
       "get": {
-        "description": "Allows the user to view all properties that are available for resellers.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows the user to view all properties that are available for resellers.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "available_reseller_properties",
         "parameters": [
           {
@@ -18475,7 +18479,7 @@
     },
     "/api/v0/Reseller/Bundles/Scope": {
       "get": {
-        "description": "Returns bundles grouped by their availability scope: region, country, or global.\n**Filtering Rules**: - Use the `filter` query parameter to specify grouping scope: `region`, `countries`, or `global`. - Pagination is supported via `page` and `limit`.\n**Region Rules**: - Bundles are grouped under one of the following display regions: Africa, Asia, Europe, Middle East, North America, South America. - **Turkey** is grouped under Europe by default. But if a bundle contains **Turkey and a Middle Eastern country**, it is grouped under Middle East. - **Oceania** countries are grouped under **Asia**. - **Central America** and **Caribbean** countries are grouped under **South America**. - Bundles are **never duplicated across regions**\u00e2\u20ac\u201deach belongs to one region only.\n**Global Rules**: - Bundles in the `global` scope must cover **more than 50 countries**.\n**Data size input rules**: - If the value is **less than 1**, it is multiplied by 1000 and treated as megabytes. - If the value is **1 or more**, it is treated as gigabytes.\n**Examples**: - To filter for **500 MB**, pass `0.5` - To filter for **500 GB**, pass `500`\n\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Returns bundles grouped by their availability scope: region, country, or global.\n**Filtering Rules**: - Use the `filter` query parameter to specify grouping scope: `region`, `countries`, or `global`. - Pagination is supported via `page` and `limit`.\n**Region Rules**: - Bundles are grouped under one of the following display regions: Africa, Asia, Europe, Middle East, North America, South America. - **Turkey** is grouped under Europe by default. But if a bundle contains **Turkey and a Middle Eastern country**, it is grouped under Middle East. - **Oceania** countries are grouped under **Asia**. - **Central America** and **Caribbean** countries are grouped under **South America**. - Bundles are **never duplicated across regions**\u00e2\u20ac\u201deach belongs to one region only.\n**Global Rules**: - Bundles in the `global` scope must cover **more than 50 countries**.\n**Data size input rules**: - If the value is **less than 1**, it is multiplied by 1000 and treated as megabytes. - If the value is **1 or more**, it is treated as gigabytes.\n**Examples**: - To filter for **500 MB**, pass `0.5` - To filter for **500 GB**, pass `500`\n\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_reseller_bundles_by_scope",
         "parameters": [
           {
@@ -18620,7 +18624,7 @@
     },
     "/api/v0/Reseller/Topup/{ResellerID}": {
       "post": {
-        "description": "Allows a monty agent to topup reseller wallet balance.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows a simwego agent to topup reseller wallet balance.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "topup_reseller_balance",
         "parameters": [
           {
@@ -18744,7 +18748,7 @@
     },
     "/api/v0/Reseller/custom_price": {
       "post": {
-        "description": "Allows a reseller agent to customize bundle retail price.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows a reseller agent to customize bundle retail price.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "customize_price",
         "parameters": [
           {
@@ -18868,7 +18872,7 @@
     },
     "/api/v0/Reseller/custom_price_csv": {
       "post": {
-        "description": "Allows a reseller agent to customize bundle retail price via Excel CSV File.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows a reseller agent to customize bundle retail price via Excel CSV File.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "customize_price_csv",
         "parameters": [
           {
@@ -18978,7 +18982,7 @@
     },
     "/api/v0/Reseller/{ResellerID}": {
       "delete": {
-        "description": "Allows PERSONNEL to delete Reseller.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows PERSONNEL to delete Reseller.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "delete_reseller",
         "parameters": [
           {
@@ -19077,7 +19081,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.reseller_controller"
       },
       "get": {
-        "description": "Gets a Reseller by ID , can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Gets a Reseller by ID , can be called by PERSONNEL.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_reseller_by_id",
         "parameters": [
           {
@@ -19190,7 +19194,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.reseller_controller"
       },
       "put": {
-        "description": "Allows admins to edit Reseller\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows admins to edit Reseller\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "edit_reseller",
         "parameters": [
           {
@@ -19300,7 +19304,7 @@
     },
     "/api/v0/ResolveIssue/{ReportID}": {
       "put": {
-        "description": "Resolve and finalize an Issue Report.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Resolve and finalize an Issue Report.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "resolve_issue",
         "parameters": [
           {
@@ -19421,7 +19425,7 @@
     },
     "/api/v0/Role": {
       "post": {
-        "description": "Takes a role object and inserts it into the DB\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Takes a role object and inserts it into the DB\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "create_role",
         "requestBody": {
           "content": {
@@ -19490,7 +19494,7 @@
     },
     "/api/v0/Role/All": {
       "get": {
-        "description": "Returns a list of roles on the platform. Gives the user the role's name, id and description.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Returns a list of roles on the platform. Gives the user the role's name, id and description.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_all_roles",
         "responses": {
           "200": {
@@ -19557,7 +19561,7 @@
     },
     "/api/v0/Role/{RoleID}": {
       "delete": {
-        "description": "Deletes specific role by ID\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Deletes specific role by ID\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "delete_role",
         "parameters": [
           {
@@ -19640,7 +19644,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.role_controller"
       },
       "get": {
-        "description": "Returns specific role by ID\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Returns specific role by ID\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_role_by_id",
         "parameters": [
           {
@@ -19723,7 +19727,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.role_controller"
       },
       "put": {
-        "description": "Allows admins to edit a Role\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows admins to edit a Role\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "edit_role",
         "parameters": [
           {
@@ -19833,8 +19837,8 @@
     },
     "/api/v0/Roles/UMAP": {
       "patch": {
-        "description": "Updates Monty Admin Role with all Permissions Available.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
-        "operationId": "update_monty_admin_permissions",
+        "description": "Updates Monty Admin Role with all Permissions Available.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
+        "operationId": "update_simwego_admin_permissions",
         "responses": {
           "200": {
             "content": {
@@ -19916,7 +19920,7 @@
     },
     "/api/v0/Token/Refresh": {
       "post": {
-        "description": "Takes a refresh Token and grants the user a new Access token and refresh Token.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Takes a refresh Token and grants the user a new Access token and refresh Token.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "refresh_token",
         "requestBody": {
           "content": {
@@ -19992,7 +19996,7 @@
     },
     "/api/v0/Transactions": {
       "get": {
-        "description": "Can be called to view reseller transaction history.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called to view reseller transaction history.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_transaction_history",
         "parameters": [
           {
@@ -20199,7 +20203,7 @@
     },
     "/api/v0/Transactions/{TransactionID}": {
       "put": {
-        "description": "Allows Super admin to edit a Transaction\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows Super admin to edit a Transaction\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "edit_transaction",
         "parameters": [
           {
@@ -20355,7 +20359,7 @@
     },
     "/api/v0/Voucher": {
       "get": {
-        "description": "Can be called to view reseller Vouchers generated.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called to view reseller Vouchers generated.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_vouchers",
         "parameters": [
           {
@@ -20531,7 +20535,7 @@
     },
     "/api/v0/Voucher/Details": {
       "get": {
-        "description": "Can be called to view reseller Vouchers generated.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called to view reseller Vouchers generated.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_voucher_codes",
         "parameters": [
           {
@@ -20715,7 +20719,7 @@
         "x-openapi-router-controller": "swagger_server.controllers.voucher_controller"
       },
       "patch": {
-        "description": "Updates Voucher Attributes.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Updates Voucher Attributes.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "patch_voucher",
         "parameters": [
           {
@@ -20841,7 +20845,7 @@
     },
     "/api/v0/Voucher/Generate": {
       "post": {
-        "description": "Checks if the reseller has balance, and generates a voucher\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Checks if the reseller has balance, and generates a voucher\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "generate_voucher",
         "parameters": [
           {
@@ -20935,7 +20939,7 @@
     },
     "/api/v0/Voucher/History": {
       "get": {
-        "description": "Can be called to view reseller Voucher Use history.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Can be called to view reseller Voucher Use history.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_voucher_code_history",
         "parameters": [
           {
@@ -21125,7 +21129,7 @@
     },
     "/api/v0/v2/Bundles/Topup": {
       "get": {
-        "description": "Allows the user to view all bundles that are compatible with the Esim Profile Installed.\n\n**SimWeGo**: This endpoint is proxied to Monty eSIM. Use your SimWeGo API key for authentication.",
+        "description": "Allows the user to view all bundles that are compatible with the Esim Profile Installed.\n\n**SimWeGo**: This endpoint is powered by SimWeGo infrastructure. Use your SimWeGo API key for authentication.",
         "operationId": "get_compatible_topup_bundles_v2",
         "parameters": [
           {
@@ -21500,7 +21504,7 @@
                     "simwegoApi": {
                       "type": "string"
                     },
-                    "montyConnection": {
+                    "simwegoConnection": {
                       "type": "string"
                     },
                     "responseTime": {
@@ -21541,7 +21545,7 @@
                 "properties": {
                   "token": {
                     "type": "string",
-                    "description": "Monty access token to validate"
+                    "description": "SimWeGo access token to validate"
                   }
                 }
               }

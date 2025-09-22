@@ -1,10 +1,11 @@
 {
   "name": "simwego-api",
   "version": "1.0.0",
-  "description": "SimWeGo Multi-Client Proxy API for Monty eSIM with PostgreSQL",
+  "description": "SimWeGo Multi-Client Proxy API",
   "main": "src/app.js",
   "scripts": {
-    "start": "node src/app.js",
+    "start": "node scripts/start-production.js",
+    "start:simple": "node src/app.js",
     "dev": "nodemon src/app.js",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:seed": "node scripts/seed-clients.js",
@@ -34,8 +35,8 @@
   "license": "MIT",
   "dependencies": {
     "@sentry/node": "^10.12.0",
-    "@sentry/profiling-node": "^10.12.0",
     "axios": "^1.6.2",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",

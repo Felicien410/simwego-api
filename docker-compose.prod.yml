@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # API SimWeGo pour production
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: simwego-api-prod
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      # Database config - utilise DATABASE_URL si disponible
+      - DATABASE_URL=${DATABASE_URL}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT:-25060}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_SSL=true
+      # Application config
+      - DB_ENCRYPTION_KEY=${DB_ENCRYPTION_KEY}
+      - MONTY_API_BASE_URL=${MONTY_API_BASE_URL}
+      - CLIENT1_MONTY_USERNAME=${CLIENT1_MONTY_USERNAME}
+      - CLIENT1_MONTY_PASSWORD=${CLIENT1_MONTY_PASSWORD}
+      - CLIENT2_MONTY_USERNAME=${CLIENT2_MONTY_USERNAME}
+      - CLIENT2_MONTY_PASSWORD=${CLIENT2_MONTY_PASSWORD}
+      - CLIENT_TEST_API_KEY=${CLIENT_TEST_API_KEY}
+      - CLIENT_REAL_API_KEY=${CLIENT_REAL_API_KEY}
+      - ADMIN_JWT_SECRET=${ADMIN_JWT_SECRET}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge
