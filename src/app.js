@@ -517,6 +517,8 @@ class SimWeGoAPI {
   // Démarrage du serveur avec informations d'architecture
   async start() {
     try {
+      console.log('🔄 Initializing database...');
+      await this.initializeDatabase();
       console.log('🔧 Setting up middleware...');
       this.setupMiddleware();
       console.log('📋 Setting up routes...');
