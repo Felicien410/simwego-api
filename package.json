@@ -21,7 +21,11 @@
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
     "client:list": "node scripts/manage-clients.js list",
-    "client:add": "node scripts/manage-clients.js add"
+    "client:add": "node scripts/manage-clients.js add",
+    "security:audit": "npm audit",
+    "security:test": "jest tests/security/",
+    "security:rotate": "node scripts/rotate-secrets.js",
+    "security:check": "npm run security:audit && npm run security:test"
   },
   "keywords": [
     "proxy",

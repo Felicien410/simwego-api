@@ -147,10 +147,27 @@ passport.use('monty-login', new LocalStrategy({
  * Stratégie Admin JWT
  * Utilisée pour authentifier les administrateurs
  */
+
+// Validation supplémentaire pour les tokens JWT
+function validateJWTToken(payload, done) {
+  // Vérifier l'expiration explicitement
+  if (payload.exp && Date.now() >= payload.exp * 1000) {
+    return done(null, false, { message: 'Token expired' });
+  }
+  
+  // Vérifier l'issuer si configuré
+  if (payload.iss && payload.iss !== 'simwego-api') {
+    return done(null, false, { message: 'Invalid token issuer' });
+  }
+  
+  return done(null, payload);
+}
+
 passport.use('admin-jwt', new JwtStrategy({
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: process.env.ADMIN_JWT_SECRET || process.env.JWT_SECRET
 }, async (payload, done) => {
+    return validateJWTToken(payload, done);
   try {
     if (!payload || payload.role !== 'admin') {
       return done(null, false, { message: 'Admin access required' });

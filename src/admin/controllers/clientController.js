@@ -379,6 +379,25 @@ class AdminClientController {
 
       // Si désactivé, invalider le cache des tokens
       if (!active) {
+        try {
+          const models = req.app.get('models');
+          if (models && models.TokenCache) {
+            await models.TokenCache.destroy({
+              where: { client_id: clientId }
+            });
+            logger.info('Token cache invalidated for deactivated client', {
+              clientId: clientId,
+              adminId: req.admin.id
+            });
+          }
+        } catch (tokenError) {
+          logger.error('Failed to invalidate token cache', {
+            error: tokenError.message,
+            clientId: clientId,
+            adminId: req.admin.id
+          });
+          // Continue même en cas d'erreur de cache
+        }
       }
 
       logger.info(`Client ${active ? 'activated' : 'deactivated'} successfully`, {

@@ -16,6 +16,36 @@ class ClientController {
         });
       }
 
+      // Récupérer les vraies données Monty depuis le cache des tokens
+      let montyConnection = {
+        authenticated: false,
+        agentId: null,
+        resellerId: null
+      };
+
+      try {
+        // Essayer de récupérer le cache des tokens pour ce client
+        const models = req.app.get('models');
+        if (models && models.TokenCache) {
+          const tokenCache = await models.TokenCache.findOne({
+            where: { client_id: client.id }
+          });
+          
+          if (tokenCache && tokenCache.isValid()) {
+            montyConnection = {
+              authenticated: true,
+              agentId: tokenCache.agent_id,
+              resellerId: tokenCache.reseller_id
+            };
+          }
+        }
+      } catch (tokenError) {
+        logger.warn('Could not retrieve Monty connection info', {
+          clientId: client.id,
+          error: tokenError.message
+        });
+      }
+
       // Return client information with expected structure (manual because Passport client is plain object)
       const response = {
         client: {
@@ -26,11 +56,7 @@ class ClientController {
           created_at: client.created_at,
           updated_at: client.updated_at
         },
-        montyConnection: {
-          authenticated: true,
-          agentId: 'test-agent-id', // Mock value for now
-          resellerId: 'test-reseller-id' // Mock value for now
-        },
+        montyConnection,
         api_endpoints: {
           bundles: '/api/v0/Bundles',
           orders: '/api/v0/Orders',

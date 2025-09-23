@@ -28,7 +28,7 @@ const environment = {
     allowedOrigins: process.env.ALLOWED_ORIGINS?.split(','),
     rateLimitWindow: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
     rateLimitMax: parseInt(process.env.RATE_LIMIT_MAX) || 100,
-    jwtSecret: process.env.JWT_SECRET || 'simwego-jwt-secret-change-in-production'
+    jwtSecret: process.env.JWT_SECRET
   },
 
   // Configuration des clients par défaut
@@ -128,6 +128,20 @@ try {
   console.error('Environment validation failed:', error.message);
   process.exit(1);
 }
+
+
+  // Validation des secrets de sécurité au démarrage
+  if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+    throw new Error('JWT_SECRET must be set and at least 32 characters long');
+  }
+  
+  if (!process.env.ADMIN_JWT_SECRET || process.env.ADMIN_JWT_SECRET.length < 32) {
+    throw new Error('ADMIN_JWT_SECRET must be set and at least 32 characters long');
+  }
+  
+  if (!process.env.DB_ENCRYPTION_KEY || process.env.DB_ENCRYPTION_KEY.length < 32) {
+    throw new Error('DB_ENCRYPTION_KEY must be set and at least 32 characters long');
+  }
 
 module.exports = {
   ...environment,
