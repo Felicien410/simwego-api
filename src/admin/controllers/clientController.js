@@ -200,7 +200,7 @@ class AdminClientController {
 
       // Si le client est désactivé, supprimer son cache de token
       if (active === false) {
-       await TokenCache.destroy({ where: { client_id: clientId } });
+        await models.TokenCache.destroy({ where: { client_id: clientId } });
       }
 
       logger.info('Client updated successfully', {
