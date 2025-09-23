@@ -518,7 +518,19 @@ class SimWeGoAPI {
   async start() {
     try {
       console.log('🔄 Initializing database...');
-      await this.initializeDatabase();
+      try {
+        await Promise.race([
+          this.initializeDatabase(),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Database initialization timeout')), 15000)
+          )
+        ]);
+        console.log('✅ Database initialized successfully');
+      } catch (dbError) {
+        console.log('⚠️ Database initialization failed or timeout, continuing without models...');
+        console.log('Database error:', dbError.message);
+      }
+      
       console.log('🔧 Setting up middleware...');
       this.setupMiddleware();
       console.log('📋 Setting up routes...');
